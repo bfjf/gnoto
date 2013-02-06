@@ -12,7 +12,9 @@ javascript
 * jquery
 * jquery mobile
 * jqplot
-* backbone.js
+* backbone
+* underscore
+* mobiscroll
 
 php
 -----
