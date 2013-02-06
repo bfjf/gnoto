@@ -1,0 +1,37 @@
+#### necessary software ####
+
+* sqlite (version 3) 
+* webserver (e.g., apache)
+* php (also need the sqlite interface installed)
+
+
+####  permissions #### 
+The database file (mouse.db) and the directory where the database are located will need
+sufficient permissions for the webserver scripts to write to them
+
+
+
+####  external javascript software libraries ####
+several libraries need to be placed in the "lib" directory
+
+* backbone
+** http://backbonejs.org/backbone-min.js
+* underscore 
+** http://underscorejs.org/underscore-min.js
+* date/time scroller
+** http://mobiscroll.com/
+* jqplot
+** need two files =>
+** jquery.jqplot.min.js 
+** jqplot.dateAxisRenderer.min.js 
+
+
+
+#### global site-specific configuration ####
+
+1) Update $SITE_ROOT = ""; in the mouse.php file
+This parameter is necessary for the qc-barcodes to function properly.  It should be the full url to your mouse
+software website.  
+
+e.g., http://www.mouse.com/ 
+e.g., http://www.myhost.com/user/data/mouse/
