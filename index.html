@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1"> 
+        <title>Gnotobiotic mouse breeder</title> 
+<!--        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.css" />-->
+       <!-- <link rel="stylesheet" href="mobiscroll-1.5.3.min.css" />-->
+<!--
+        <link rel="stylesheet" href="mobiscroll-1.6.min.css" />
+        <link rel="stylesheet" href="mouse.css" />
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
+->
+	<script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
+-->
+<!--    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.0-beta.1/jquery.mobile-1.3.0-beta.1.min.css" />-->
+<!--<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.0-rc.1/jquery.mobile-1.3.0-rc.1.min.css" />-->
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+
+    <link href="css/mobiscroll-2.0.full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="css/jquery.jqplot.min.css" />
+<!--    <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>-->
+<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+
+    <script src="js/jqm-config.js"></script>
+<!--    <script src="http://code.jquery.com/mobile/1.3.0-beta.1/jquery.mobile-1.3.0-beta.1.min.js"></script>-->
+<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+<!--<script src="http://code.jquery.com/mobile/1.3.0-rc.1/jquery.mobile-1.3.0-rc.1.min.js"></script>-->
+
+    <script src="lib/underscore-min.js"></script>
+    <script src="lib/backbone-min.js"></script>
+    <script src="js/route.js"></script>
+    <script src="js/util.js"></script>
+    <script src="js/jquery.gnotobiotic_misc.js"></script>
+    <script src="js/jquery.gnotobiotic_todo.js"></script>
+    <script src="js/jquery.gnotobiotic_ready.js"></script>
+    <script src="js/jquery.gnotobiotic_update.js"></script>
+
+<!--        <script src="js/jquery.gnotobiotic.js"></script>-->
+        <script src="lib/mobiscroll-2.0.full.min.js"></script>
+	<script language="javascript" type="text/javascript" src="lib/jquery.jqplot.min.js"></script>
+	<script language="javascript" type="text/javascript" src="lib/jqplot.dateAxisRenderer.min.js"></script>
+
+
+<!--        <script src="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.js"></script>-->
+        <!--<script src="jquery.mouse.js"></script>-->
+<!--        <script src="jquery.mousetodo.js"></script>-->
+<!--        <script src="jquery.mouseready.js"></script>-->
+<style>
+  .ui-page { background: gray;}
+</style>
+<script>
+
+	/* there is some weird timing stuff so that this event fires before the "ready" jquery event 
+	   this is a set of annoying hacks to get around this problem;  I couldn't figure out from the documentation
+	   if there is a better way;  this works, its just ugly and hard to read
+	*/
+
+	// three global variables
+	var EARLY_URL;
+	var CLEAN_URL;
+	var PLUGIN_INIT = 0;
+        $(document).bind("pagebeforechange",function(e,data)  {
+
+		if (!PLUGIN_INIT) { // the "ready" state hasn't fired yet
+			if (typeof data.toPage === "string") { // only check URLs not data.toPage jquery objects
+				var u = $.mobile.path.parseUrl(data.toPage);
+				if (CLEAN_URL)
+					e.preventDefault();
+				else if (EARLY_URL)
+					CLEAN_URL = 1;
+				else {
+					EARLY_URL = u.href;
+		                	console.log('earliest is ' + EARLY_URL);
+		
+					var clean_url = EARLY_URL;
+					clean_url = clean_url.replace(/#.*/,"");
+			                console.log('clean is ' + clean_url);
+	
+					// the non-ajax page needs to load first to get the DOM sorted?
+					$.mobile.changePage(clean_url, {dataUrl:EARLY_URL});
+				}
+			}
+		}
+
+        });
+
+//    $(document).bind("mobileinit", function(){
+ //         $.mobile.defaultTransition = 'none';
+  //  });
+</script>
+</head>
+
+<body>
+
+<div data-role="page" id="page" data-theme="d" data-content-theme="d">
+
+
+        <div data-role="header" data-position="fixed">
+                <h1>Gnotobiotic mouse breeder<span id="header_tools_span"></span></h1>
+        </div><!-- /header -->
+
+        <div id="content_pane" data-role="content">
+		Welcome to the Gnotobiotic mouse breeder database.  Use the buttons on the bottom of the page to navigate.  
+
+		<h3>Instructions</h3>
+		<div data-role="collapsible-set">
+			<div data-role="collapsible" data-collapsed="true">
+				<h3>Update</h3>
+				<p>add/change information about your mice, cages, and isolators.</p>
+			</div>
+			<div data-role="collapsible" data-collapsed="true">
+				<h3>Ready</h3>
+				<p>look for mice that match a set criterion for an experiment you want to perform</p>
+			</div>
+			<div data-role="collapsible" data-collapsed="true">
+				<h3>To Do</h3>
+				<p>lists mice need to be weaned and breeders that are due to deliver</p>
+			</div>
+		</div>
+        </div><!-- /content -->
+
+<div data-role="footer" class="ui-bar">
+    <div data-role="controlgroup" data-type="horizontal">
+    <a id="nav_update" href="#update" data-role="button">Update</a>
+    <a id="nav_ready"  href="#ready" data-role="button">Ready</a>
+  <!--  <a id="ready" class="nav" href="index.html#ready?new=old" data-role="button">Ready</a>-->
+    <a id="nav_todo" href="#todo" data-role="button">To Do</a>
+    <a id="nav_misc" href="#misc" data-role="button">Misc</a>
+    </div>
+</div><!-- /footer -->
+
+</div><!-- /page -->
+
+</body>
+</html>
+
+
