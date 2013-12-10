@@ -1,6 +1,7 @@
 <?php
+error_reporting(E_ERROR | E_PARSE);
 
-$SITE_ROOT = "http://cgsdata.wustl.edu/jglab/release/mouse_dev2/";
+$SITE_ROOT = "http://gnoto.mssm.edu/";
 
 # connect to the database
 $db_name = "mouse.db";
@@ -108,7 +109,7 @@ function edit_mouse($db) {
 		if (!$ok) { $results['error'] =  "Error inserting mouse sex: " . $db->lastErrorMsg() . "<BR>query: $update<BR>"; return $results;}
 	}
 	if ($mouseStrain = $_GET['mouseStrain']) {
-		$update = "UPDATE mouse set genotype='" . $mouseStrain . "' where mouse_id=$mouse_id";
+		$update = "UPDATE mouse set strain='" . $mouseStrain . "' where mouse_id=$mouse_id";
 		$ok = $db->exec($update);
 		if (!$ok) { $results['error'] =  "Error inserting mouse sex: " . $db->lastErrorMsg() . "<BR>query: $update<BR>"; return $results;}
 	}
@@ -541,6 +542,7 @@ function get_isolators($db) {
 	$result = $db->query('SELECT * FROM isolator');
 	while($row = $result->fetchArray(SQLITE3_NUM)) {
 		if ($row[2]) {
+#			$row[2] = date('Y-n-d',$row[2]);
 			$row[2] = date('Y-n-d',$row[2]);
 		}
 		if ($row[3]) {

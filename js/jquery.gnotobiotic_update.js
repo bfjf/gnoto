@@ -423,7 +423,7 @@
 
 		//function write_select(label, name, id, options, selected, show_blank) {
 				if (everything_editable) 
-					html +=  write_select('Strain', 'strain', 'strain', MOUSE.strains, index_in_array(MOUSE.strains,result[7]), 1);
+					html +=  write_select('Strain', 'mouseStrain', 'mouseStrain', MOUSE.strains, index_in_array(MOUSE.strains,result[7]), 1);
 				else 
 					html += '<div>Strain: ' + result[7] + '</div>';
 
@@ -494,7 +494,7 @@
 	                		html += write_select('Death Type', 'death_type', 'death_type',['sacrifice','parental neglect','unknown'],-1,1);
 
 				if (result[8] == 'unknown' || everything_editable) 
-					html +=  write_select('Genotype', 'genotype', 'genotype', MOUSE.genotypes, index_in_array(MOUSE.genotypes, result[8]), 1);
+					html +=  write_select('Genotype', 'mouseGenotype', 'mouseGenotype', MOUSE.genotypes, index_in_array(MOUSE.genotypes, result[8]), 1);
 //					html +=  write_select('Strain', 'strain', 'strain', MOUSE.strains, index_in_array(MOUSE.strains,result[7]), 1);
 				else
 					html += '<p>Genotype: ' + result[8] + '</p>';
@@ -668,9 +668,9 @@
 			html += write_radio('mouseType', 'Mouse Type',
 				[['breederType','breeder','Breeder'],['experimentalType','experimental','Experimental','checked']]);
 
-			html +=  write_select('Strain', 'strain', 'strain', MOUSE.strains, 0, 1);
+			html +=  write_select('Strain', 'mouseStrain', 'mouseStrain', MOUSE.strains, 0, 1);
 
-			html +=  write_select('Genotype', 'genotype', 'genotype', MOUSE.genotypes, 0, 1);
+			html +=  write_select('Genotype', 'mouseGenotype', 'mouseGenotype', MOUSE.genotypes, 0, 1);
 
                		html += write_date_dialog('date1', 'Birth Date', 'birth_date'); 
 		        html += '<div data-role="fieldcontain">' + 
