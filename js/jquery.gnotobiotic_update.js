@@ -2,9 +2,12 @@
 	TO DO:
 		1) fix "show_isolator" to call the router
 		2) add start date back to isolator?
-		3) add Admin to isolator (to add administrators)
+		3) need way to change isolator data
+		4) add mouse Tag column for tracking ears, toes, etc...
+		5) default new pups to have same strain as parents
 
 	DONE:
+
 */
 //
 
