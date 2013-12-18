@@ -4,10 +4,10 @@ var AppRouter = Backbone.Router.extend({
         "":"home",
         "todo":"todo",
         "misc":"misc",
-        "misc?:id":"misc",
+        "misc/:id":"misc",
         "ready":"ready",
         "update":"update",
-        "isolator?:id" : "show_isolator",
+        "isolator/:id" : "show_isolator",
         "posts?:id": "getPost"
     },
 
@@ -51,7 +51,11 @@ var AppRouter = Backbone.Router.extend({
 	$('#content_pane').gnotobiotic_update();
     },
     show_isolator:function(id) {
-        console.log('showing isolator ' + id);
+	if (id)
+        	console.log('showing isolator ' + id);
+	else
+	       	console.log('no id passed');
+
 	$('#content_pane').gnotobiotic_update({show:'isolator',isolator_id:id});
 //        this.changePage();
         //this.changePage(new Page3View());
