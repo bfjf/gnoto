@@ -320,8 +320,16 @@ function add_isolator($db) {
 # isolator_size text, /* small, medium, large */
 # start_date integer,
 # end_date integer
-		
-	$insert = "INSERT INTO isolator VALUES(null, '$isolatorDescription', '$administrator', $start_date, 0);";
+	$insert = "";
+	if ($_GET['isolator_id']) {
+		$isolator_id=$_GET['isolator_id'];
+		#BLAH
+		$insert = "UPDATE isolator set isolator_description='$isolatorDescription',administrator='$administrator' where isolator_id=$isolator_id";
+#		$result = $db->query("UPDATE mouse set death_date=$death_date, death_type='$death_type', sex='$mouse_sex' where mouse_id=$mouse_id");
+	}
+	else {
+		$insert = "INSERT INTO isolator VALUES(null, '$isolatorDescription', '$administrator', $start_date, 0);";
+	}
 	$ok = $db->exec($insert);
 	if (!$ok) { $results['error'] =  "Error inserting: " . $db->lastErrorMsg() . " [$insert]<BR>"; }
 	else { $results['success']=1; }

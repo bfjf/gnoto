@@ -241,6 +241,9 @@
 					html +=	'</br>';
 					html += '<a id="' + cage_pane  + '" title="add_cage" href="#" data-role="button">Add a cage</a>';
 
+					var iso_edit = 'iso_edit';
+					html += '</br><a id="' + iso_edit  + '" title="edit_isolator" href="#" data-role="button">Edit isolator description</a>';
+
 
 
 					$pane.html(html).trigger('create');
@@ -248,6 +251,14 @@
 					if (isolator_id != 0)
 						add_isolator_productivity('isolator_productivity', result.isolator_productivity);
 
+					$('#' + iso_edit).click(function(){
+//					html += '<h2>Isolator ' + isolator_info[0] + '</h2>';
+//					html += '<p><b>Isolator description:</b> ' + isolator_info[1] +  '</p>';
+//					html += '<p><b>Isolator administrator:</b> ' + isolator_info[2] +  '</p>';
+						add_isolator($pane, MOUSE, {'isolator_id':isolator_info[0],isolator_description:isolator_info[1],isolator_administrator:isolator_info[2]});
+						debug('editing isolator');
+						return false;
+					});
 					$('.edit_mouse').click(function() {
 						var cage_id = this.title;
 						var mouse_id = this.id;
@@ -327,6 +338,7 @@
 					html += '<a id="' + cage_pane  + '" title="add_cage" href="#" data-role="button">Add a cage</a>';
 					$pane.html(html).trigger('create');
 				}
+
 				$('#' + cage_pane).click(function() {
 					add_cage($pane, MOUSE, isolator_id);
 					return false;
@@ -754,23 +766,38 @@
 			});
 		}
 
-		function add_isolator($pane, MOUSE) {
+		function add_isolator($pane, MOUSE, exists) {
 			var html='';
 			html += '<form id="add_isolator_form">';
 //			html += write_radio('isolatorSize', 'Isolator Size',
  //                               [['isolatorLarge','large','Large'],['isolatorMedium','medium','Medium'],['isolatorSmall','small','Small','checked']]);
 			html += '<div data-role="fieldcontain">' + 
 				'<label for="admin"><b>Isolator Description<b>&nbsp;</label>';
-			html += "<textarea name='isolatorDesc'></textarea></div>" + 
+//				add_isolator($pane, MOUSE, {'isolator_id':isolator_info[0],isolator_description:isolator_info[1],isolator_administrator:isolator_info[2]}});
+			if (exists && exists.isolator_description)
+				html += "<textarea name='isolatorDesc'>" + exists.isolator_description +  "</textarea></div>";
+			else 
+				html += "<textarea name='isolatorDesc'></textarea></div>";
 
-				'<div data-role="fieldcontain">' + 
+			html += '<div data-role="fieldcontain">' + 
 				'<label for="admin"><b>Isolator Administrator<b>&nbsp;</label>';
-			html += "<input type='text' name='admin'></div>";
+			if (exists && exists.isolator_administrator)
+				html += "<input type='text' name='admin' value='" + exists.isolator_administrator + "'></div>";
+			else
+				html += "<input type='text' name='admin'></div>";
+
 			html += '<div id="error_pane"></div>';
 
+
+			if (exists && exists.isolator_id)
+				html += "<input type='hidden' name='isolator_id' value='" + exists.isolator_id + "'>";
+
 			html += '<button type="submit" data-theme="b" name="submit" value="submit-value">Submit</button></form>';
+//				debug('updating isolator');
 
 			$pane.html(html).trigger('create');
+
+
 //			$('#date1').scroller('destroy').scroller({ dateFormat:'yy-mm-dd',preset: 'date'});
 			$('#add_isolator_form').submit(function(){
 				debug($(this).serialize());
