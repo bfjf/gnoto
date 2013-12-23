@@ -119,7 +119,7 @@
 			var html = '<h3>Miscellaneous tools</h3>';
 			html += '<a data-ajax=false data-role="button" href="mouse.php?qr_codes=1">Print isolator barcodes</a>';
 			var morgue_button = 'morgue_button';
-			html += '<a id="' + morgue_button  + '" title="morgue_button" href="#misc?morgue" data-role="button">Morgue</a>';
+			html += '<a id="' + morgue_button  + '" title="morgue_button" href="#misc/morgue" data-role="button">Morgue</a>';
 			$pane.html(html).trigger('create');
 			if (MOUSE.callback) {
 				MOUSE.callback();

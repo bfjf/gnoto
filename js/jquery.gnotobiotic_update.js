@@ -85,7 +85,9 @@
 				$('#isolator_id').change(function(e,passed) {
 					var isolator_selected = $('#isolator_id').val();	
 					debug('selected ' + isolator_selected);
-					MyAppRouter.navigate("#isolator?" + isolators[isolator_selected][0], {trigger:true});
+//					MyAppRouter.navigate("#isolator?" + isolators[isolator_selected][0], {trigger:true});
+					MyAppRouter.navigate("#isolator/" + isolators[isolator_selected][0], {trigger:true});
+//					MyAppRouter.navigate("#misc/10", {trigger:true});
 				});
 				$('#' + add_isolator_pane).click(function() {
 					add_isolator($pane, MOUSE);
