@@ -331,7 +331,10 @@
 					$('.add_mouse_button').click(function() {
 						var cage_id = this.title;
 						debug('add mice to cage ' + cage_id);
-						add_mice($pane, MOUSE, cage_id, isolator_id, isolator_info);
+///							var mice_in_cage = result.mice[cages[i][0]];
+//							var mice_in_cage = result.mice[cages[i][0]];
+//								html += '<tr><td colspan=4><a data-mini="true" class="add_mouse_button" id="' + cage_id  + '" title=' + cages[i][0] +  ' href="#" data-role="button">Add mice to cage ' + cage_num + '</a></td><td>&nbsp;</td></tr>';
+						add_mice($pane, MOUSE, cage_id, isolator_id, isolator_info, result.mice[cage_id]);
 						return false;
 	
 					});
@@ -678,7 +681,61 @@
 			var month = date_obj.getMonth()+1;
 			return date_obj.getFullYear() + '-' + month + '-' + date_obj.getDate();
 		}
-		function add_mice($pane, MOUSE, cage_id, isolator_id, isolator_info) {
+		function get_default_strain(mice_in_cage, list) {
+			for (var i=0; i<mice_in_cage.length; i++) {
+				if (mice_in_cage[i][6] == "breeder") {
+					var strain = mice_in_cage[i][7];
+					for (var j=0; j<list.length; j++) {
+						if (list[j] == strain)
+							return j;
+					}
+				}
+			}
+
+			return 0; // no default strain
+		}
+		function get_default_genotype(mice_in_cage, list) {
+			var breeder_genotypes = [];
+			for (var i=0; i<mice_in_cage.length; i++) {
+				if (mice_in_cage[i][6] == "breeder") {
+					var genotype = mice_in_cage[i][8];
+					breeder_genotypes[genotype]=1;
+				}
+			}
+
+			// count keys to see if there is only one genotype
+			var last_genotype;
+			var num_genotypes = 0;
+		        for(var k in breeder_genotypes) {
+				num_genotypes++;
+				last_genotype = k;
+//				debug('have genotype ' + k);
+
+//				keys.push(k);
+			}
+//			debug('have ' + num_genotypes + ' genotypes');
+
+			var genotype;
+			if (num_genotypes == 1)
+				genotype = last_genotype;
+			else 
+				genotype = 'unknown'; // default is we don't know the genotype
+				
+			
+			for (var j=0; j<list.length; j++) {
+				if (list[j] == genotype)
+					return j;
+			}
+				
+
+//blah
+			return 0;
+		}
+
+		function add_mice($pane, MOUSE, cage_id, isolator_id, isolator_info, mice_in_cage) {
+//						add_mice($pane, MOUSE, cage_id, isolator_id, isolator_info, result.mice[cages[cage_id-1][0]]);
+								//if (age_in_weeks > 30 && mice_in_cage[j][6] == "breeder" && mice_in_cage[j][1] == "female")
+								//html += '<td align="center">' + mice_in_cage[j][8] + '</td>';
 			var html='';
 			html += '<form id="add_mouse_form">';
 			html += write_radio('mouseSex', 'Sex',
@@ -687,9 +744,20 @@
 			html += write_radio('mouseType', 'Mouse Type',
 				[['breederType','breeder','Breeder'],['experimentalType','experimental','Experimental','checked']]);
 
-			html +=  write_select('Strain', 'mouseStrain', 'mouseStrain', MOUSE.strains, 0, 1);
+//blah
 
-			html +=  write_select('Genotype', 'mouseGenotype', 'mouseGenotype', MOUSE.genotypes, 0, 1);
+			var default_strain = 1;
+			var default_genotype = 1;
+			debug('before default select mice');
+			if (mice_in_cage.length) {
+				default_strain = get_default_strain(mice_in_cage, MOUSE.strains);
+				default_genotype = get_default_genotype(mice_in_cage, MOUSE.genotypes);
+//				debug('adding mice with default strain ' + default_strain + ' ' + MOUSE.strains[default_strain] + ' and default genotype ' + default_genotype + ' ' + MOUSE.genotypes[default_genotype]);
+			}
+
+			html +=  write_select('Strain', 'mouseStrain', 'mouseStrain', MOUSE.strains, default_strain, 1);
+
+			html +=  write_select('Genotype', 'mouseGenotype', 'mouseGenotype', MOUSE.genotypes, default_genotype, 1);
 
                		html += write_date_dialog('date1', 'Birth Date', 'birth_date'); 
 		        html += '<div data-role="fieldcontain">' + 
