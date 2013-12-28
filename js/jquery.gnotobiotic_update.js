@@ -199,7 +199,9 @@
 								var quick_buttons='';
 								
 								/* only make it easy to cull females that are NOT breeders; all males should be hard to cull */
-								if (mice_in_cage[j][1] != "male" && mice_in_cage[j][6] != "breeder")
+//								if (mice_in_cage[j][1] != "male" && mice_in_cage[j][6] != "breeder")
+								/* only make it easy to cull animals that are NOT breeders */
+								if (mice_in_cage[j][6] != "breeder")
 									quick_buttons += '<a class="cull_mouse" id="' + mice_in_cage[j][0]  + '" title="mouseCull' + mice_in_cage[j][0] + '" data-mini="true" href="#" data-inline="true" data-role="button">Cull</a>';
 //								else
 //									html += '<td>&nbsp;</td>';
