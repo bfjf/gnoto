@@ -537,7 +537,7 @@ function write_qr_codes($db) {
 			$qr_url = $SITE_ROOT . "#isolator?$row[0]";
 			$google_url .= urlencode($qr_url);
 #			echo "<hr /><h1>Isolator $row[0]</h1><h3>Start-date: $row[2]</h3>";
-			echo "<hr style='clear:left' /><div style='float:left;'><h1>Isolator $row[0]</h1><h3>Administrator: $row[2]</h3></div><div style='float:left;'><img style='float:left;' src='$google_url' /></div><hr style='clear:left' />";
+			echo "<hr style='clear:left' /><div style='float:left;'><h1>Isolator $row[0]</h1><h3>Administrator: $row[2]</h3><h5>$row[1]</h5></div><div style='float:left;'><img style='float:left;' src='$google_url' /></div><hr style='clear:left' />";
 #			echo "<hr style='clear:left' /><div style='float:left;'><h1>Isolator $row[0]</h1><h3>Administrator: TBD</h3><h3>Start date: $row[2]</h3></div><div style='float:left;'><img style='float:left;' src='$google_url' /></div><hr style='clear:left' />";
 	#		echo "<hr style='clear:left' /><div style='float:left;'><h1>Isolator $row[0]</h1><h3>Start-date: $row[2]</h3></div><div style='float:left;'><img style='float:left;' src='$google_url' />$qr_url</div><hr style='clear:left' />";
 		}
