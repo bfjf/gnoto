@@ -1,12 +1,9 @@
 /*
 	TO DO:
-		1) fix "show_isolator" to call the router
-		2) add start date back to isolator?
+		1) add quick move table selector (and each mouse will have a "mv:#" next to it to move it to that location); only allow for WITHIN an isolator
 		4) add mouse Tag column for tracking ears, toes, etc...
-		5) default new pups to have same strain as parents
 
 	DONE:
-		3) need way to change isolator data
 
 */
 //
