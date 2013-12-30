@@ -26,6 +26,14 @@ elseif ($_GET['add_cage']) {
 	$JSON = add_cage($db);
 	echo json_encode($JSON);
 }
+elseif ($_GET['add_strain']) {
+	$JSON = add_strain($db);
+	echo json_encode($JSON);
+}
+elseif ($_GET['add_genotype']) {
+	$JSON = add_genotype($db);
+	echo json_encode($JSON);
+}
 elseif ($_GET['add_note']) {
 	$JSON = add_note($db);
 	echo json_encode($JSON);
@@ -36,6 +44,14 @@ elseif ($_GET['add_mice']) {
 }
 elseif ($_GET['edit_mouse']) {
 	$JSON = edit_mouse($db);
+	echo json_encode($JSON);
+}
+elseif ($_GET['get_strains']) {
+	$JSON = get_strains($db);
+	echo json_encode($JSON);
+}
+elseif ($_GET['get_genotypes']) {
+	$JSON = get_genotypes($db);
 	echo json_encode($JSON);
 }
 elseif ($_GET['get_isolators']) {
@@ -60,19 +76,6 @@ elseif ($_GET['to_do']) {
 elseif ($_GET['get_available_mice']) {
 	$JSON = get_available_mice($db);
 	echo json_encode($JSON);
-}
-elseif ($_GET['qr_codes']) {
-	write_qr_codes($db);
-}
-elseif ($_GET['morgue']) {
-	$JSON = get_deceased_mice($db);
-	echo json_encode($JSON);
-}
-elseif ($_GET['revive_mouse']) {
-	revive_mouse($db);
-}
-elseif ($_GET['cull_mouse']) {
-	cull_mouse($db);
 }
 //elseif ($_GET['quick_mouse_edit']) {
 //	quick_mouse_edit($db);
@@ -285,6 +288,33 @@ function add_note($db) {
 	return $results;
 }
 
+function add_genotype($db) {
+	$results = array();
+	$genotype_name = $_GET['genotype_name'];
+
+	$insert = "INSERT INTO genotype VALUES('$genotype_name')";
+
+	$ok = $db->exec($insert);
+	if (!$ok) { $results['error'] =  "Error inserting: " . $db->lastErrorMsg() . "<BR>"; }
+	else { $results['success']=1; }
+
+	return $results;
+}
+
+function add_strain($db) {
+	$results = array();
+	$strain_name = $_GET['strain_name'];
+
+	$insert = "INSERT INTO strain VALUES('$strain_name')";
+
+	$ok = $db->exec($insert);
+	if (!$ok) { $results['error'] =  "Error inserting: " . $db->lastErrorMsg() . "<BR>"; }
+	else { $results['success']=1; }
+
+	return $results;
+}
+
+
 function add_cage($db) {
 	$results = array();
 	$start_date = strtotime($_GET['start_date']);
@@ -354,6 +384,25 @@ function to_do($db) {
 		$results['litter_due'][] = $row;
 	}
 
+
+	return $results;
+}
+function get_genotypes($db) {
+	$results = array();
+	$result = $db->query('SELECT genotype_name FROM genotype');
+	while($row = $result->fetchArray(SQLITE3_NUM)) {
+		$results[] = $row;
+	}
+
+	return $results;
+}
+
+function get_strains($db) {
+	$results = array();
+	$result = $db->query('SELECT strain_name FROM strain');
+	while($row = $result->fetchArray(SQLITE3_NUM)) {
+		$results[] = $row;
+	}
 
 	return $results;
 }

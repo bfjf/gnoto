@@ -68,14 +68,14 @@ create table note
 
 drop table if exists strain;
 create table strain
-(strain_name text /* small, medium, large */
+(strain_name text NOT NULL UNIQUE/* small, medium, large */
 );
 insert into strain VALUES('C57BL/6J');
 insert into strain VALUES('Swiss Webster');
 
 drop table if exists genotype;
 create table genotype
-(genotype_name text /* small, medium, large */
+(genotype_name text NOT NULL UNIQUE /* small, medium, large */
 );
 insert into genotype VALUES('WT');
 insert into genotype VALUES('unknown');

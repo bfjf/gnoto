@@ -24,6 +24,10 @@
 				help_pane($pane, MOUSE);
 			else if (options && options.show == "morgue")
 				init_morgue($pane, MOUSE);
+			else if (options && options.show == "strains")
+				init_strains($pane, MOUSE);
+			else if (options && options.show == "genotypes")
+				init_genotypes($pane, MOUSE);
 			else
 				init_misc($pane, MOUSE);
 
@@ -58,8 +62,93 @@
                                 '</div>';
                         $pane.html(html).trigger('create');
                 }
+		function init_genotypes($pane, MOUSE) {
+			debug('in init_genotypes');
+			var url = MOUSE.url + "?get_genotypes=1";
+			var message_pane = 'strain_messages';
+			var html='<h2>Current Genotypes</h2><div id="' + message_pane + '"></div>';
+			$.getJSON(url, function(results) {
+				html += '<table>';
+				for (var i=0; i<results.length; i++)
+					html += "<tr><td>" + results[i] + "</td></tr>";
+
+				html += '</table><br/>';
+
+				html += '<hr/>';
+				html +='<h2>Add new genotype</h2>';
+				html += '<form id="add_genotype_form">';
+                        	html += '<input type="hidden" name="add_genotype" id="add_genotype" value="1"/>';
+				html += '<div data-role="fieldcontain">';
+                                html += '<label for="select_name" class="select">Genotype Name:</label>';
+                        	html += '<input type="text" name="genotype_name" id="genotype_name"/>';
+				html += '</div>';
+				html += '<button type="submit" data-theme="b" name="submit" value="submit-value">Submit</button>';
+				html += '</form>';
+				$pane.html(html).trigger('create');
 
 
+				$('#add_genotype_form').submit(function(){
+					debug($(this).serialize());
+                                        var urlB = MOUSE.url + '?' + $(this).serialize();
+                                        debug('url is ' + urlB);
+                                        $.getJSON(urlB, function(result) {
+                                                if (result.success) {
+                                                        MyAppRouter.navigate("");
+                                                        MyAppRouter.navigate("#misc?genotypes", {trigger:true});
+//                                                        MyAppRouter.navigate("#misc?strains");
+                                                }
+                                                else
+                                                        $('#' + message_pane).html('<b>Error:</b> could not add genotype (' + result.error + ')');
+					});
+					return false;
+                        	});
+			});
+
+
+		}
+		function init_strains($pane, MOUSE) {
+			var url = MOUSE.url + "?get_strains=1";
+			var message_pane = 'strain_messages';
+			var html='<h2>Current Strains</h2><div id="' + message_pane + '"></div>';
+			$.getJSON(url, function(results) {
+				html += '<table>';
+				for (var i=0; i<results.length; i++)
+					html += "<tr><td>" + results[i] + "</td></tr>";
+
+				html += '</table><br/>';
+
+				html += '<hr/>';
+				html +='<h2>Add new strain</h2>';
+				html += '<form id="add_strain_form">';
+                        	html += '<input type="hidden" name="add_strain" id="add_strain" value="1"/>';
+				html += '<div data-role="fieldcontain">';
+                                html += '<label for="select_name" class="select">Strain Name:</label>';
+                        	html += '<input type="text" name="strain_name" id="strain_name"/>';
+				html += '</div>';
+				html += '<button type="submit" data-theme="b" name="submit" value="submit-value">Submit</button>';
+				html += '</form>';
+				$pane.html(html).trigger('create');
+
+
+				$('#add_strain_form').submit(function(){
+					debug($(this).serialize());
+                                        var urlB = MOUSE.url + '?' + $(this).serialize();
+                                        debug('url is ' + urlB);
+                                        $.getJSON(urlB, function(result) {
+                                                if (result.success) {
+                                                        MyAppRouter.navigate("");
+                                                        MyAppRouter.navigate("#misc?strains", {trigger:true});
+//                                                        MyAppRouter.navigate("#misc?strains");
+                                                }
+                                                else
+                                                        $('#' + message_pane).html('<b>Error:</b> could not add strain (' + result.error + ')');
+					});
+					return false;
+                        	});
+			});
+
+
+		}
 		function init_morgue($pane, MOUSE) {
 			var message_pane = 'morgue_messages';
 			var html='<h2>Morgue</h2><div id="' + message_pane + '"></div>';
@@ -82,7 +171,6 @@
 
 				}
 				html += '</table>';
-
 
 				$pane.html(html).trigger('create');
 				$('.revive_mouse').click(function() {
@@ -119,7 +207,11 @@
 			var html = '<h3>Miscellaneous tools</h3>';
 			html += '<a data-ajax=false data-role="button" href="mouse.php?qr_codes=1">Print isolator barcodes</a>';
 			var morgue_button = 'morgue_button';
+			var strain_button = 'strain_button';
+			var genotype_button = 'genotype_button';
 			html += '<a id="' + morgue_button  + '" title="morgue_button" href="#misc?morgue" data-role="button">Morgue</a>';
+			html += '<a id="' + strain_button  + '" title="strain_button" href="#misc?strains" data-role="button">Strains</a>';
+			html += '<a id="' + genotype_button  + '" title="genotype_button" href="#misc?genotypes" data-role="button">Genotypes</a>';
 			$pane.html(html).trigger('create');
 			if (MOUSE.callback) {
 				MOUSE.callback();
