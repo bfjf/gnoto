@@ -66,6 +66,10 @@ elseif ($_GET['get_mouse']) {
 	$JSON = get_mouse($db);
 	echo json_encode($JSON);
 }
+elseif ($_GET['move_mouse']) {
+	$JSON = move_mouse($db);
+	echo json_encode($JSON);
+}
 elseif ($_GET['show_tables']) {
 	show_tables($db);
 }
@@ -155,6 +159,47 @@ function edit_mouse($db) {
 	$results['success']=1;
 
 	return $results;
+}
+
+function move_mouse($db) {
+	$results = array();
+
+	if ($_GET['mouseId']) {
+		$mouse_id=$_GET['mouseId'];
+	}
+	else {
+		$results['error'] = "a mouse id must be provided";
+
+		return $results;
+	}
+	if ($cageId = $_GET['cage_select']) {
+		$update = "UPDATE mouse set cage_id=$cageId where mouse_id=$mouse_id";
+		$ok = $db->exec($update);
+		if (!$ok) { $results['error'] =  "Error changing mouse cage: " . $db->lastErrorMsg() . "<BR>query: $update<BR>"; return $results;}
+	}
+
+
+	# prepare an updated cage info to send back to the querying software
+#	$isolator_id = $_GET['isolator_id'];
+#	$result = $db->query("SELECT * FROM cage WHERE isolator_id=$isolator_id");
+#	while($row = $result->fetchArray(SQLITE3_NUM)) {
+#		if ($row[4]) {
+#			$row[4] = date('Y-n-d',$row[4]);
+#		}
+#		if ($row[5]) {
+#			$row[5] = date('Y-n-d',$row[5]);
+#		}
+
+#		$results['cage'][] = $row;
+
+		# mouse referenced by cage id
+#		echo "mouse info for cage id $row[0]";
+#		$results['mice'][$row[0]] = get_mouse_info($db, $row[0]);
+#	}
+	$results['success'] =  1;
+
+	return $results;
+
 }
 
 function add_mice($db) {

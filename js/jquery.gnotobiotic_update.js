@@ -1,6 +1,10 @@
 /*
 	TO DO:
 		1) add quick move table selector (and each mouse will have a "mv:#" next to it to move it to that location); only allow for WITHIN an isolator
+			need to name table with cage and name rows with mouse id
+			need to update the database and if response is "success" then =>
+			need to detach row http://api.jquery.com/detach/
+			need to append to another table http://www.dotnetcurry.com/showarticle.aspx?ID=956
 		4) add mouse Tag column for tracking ears, toes, etc...
 
 	DONE:
@@ -103,7 +107,7 @@
 
 			var url = MOUSE.url + "?get_cages=1&isolator_id=" + isolator_id;
 			$.getJSON(url, function(result) {
-				$('#header_tools_span').text('_.');
+//				$('#header_tools_span').text('_.');
 
 				var isolator_notes_pane = 'isolator_notes';
 				var isolator_info = result.isolator_info;
@@ -142,10 +146,28 @@
 				MOUSE.genotypes = result.genotypes;
 				MOUSE.cages = result.cages;
 				MOUSE.isolators = result.isolators;
+				MOUSE.quick_move_table = 0;
+				MOUSE.quick_move_cage = 0;
 				var cage_note = 'cage_note';
 				if (result.cage) {
 					var cages = result.cage;
 					debug('in cages precage');
+//					blah
+//
+//					/* set up to all quick move */
+					var options = []; var values = []; var option_to_value = [];
+
+					for (var i=0; i<cages.length; i++) {
+						var cage_num = i + 1; var cage_id = cages[i][0];
+						options[i] = cage_id;
+						values[i] = 'cage ' + cage_num;
+						option_to_value[cage_id] = cage_num;
+					}
+//
+//
+					html += write_select('Quick move cage destination', 'quick_table_move', 'quick_table_move', options, 0, 0, values);
+					MOUSE.quick_move_table = options[0];
+					MOUSE.quick_move_cage = values[0];
 					//debug('length is ' + cages.length);
 	
 					var sex_to_short = {undetermined:'?',male:'M',female:'F'};
@@ -153,10 +175,14 @@
 						var cage_num = i + 1;
 						var cage_id = MOUSE.pane_id + 'cage' + cages[i][0];
 
+						html += '<br /><table id="cage' + cages[i][0] + '">';
+						html += '<tr><th colspan=8>Cage ' + cage_num + '</th></tr>';
+						html += '<tr><th>Id</th><th>Sex</th><th>Birth-date</th><th>Age (wks)</th><th>Wean-date</th><th>Type</th><th>Strain</th><th>Genotype<th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th></tr>';
+
 						if (result.mice && result.mice[cages[i][0]] && result.mice[cages[i][0]].length){
-							html += '<br /><table>';
-							html += '<tr><th colspan=8>Cage ' + cage_num + '</th></tr>';
-							html += '<tr><td colspan=8>';
+							var table_id = cages[i][0];
+//							debug('table id is ' + table_id);
+							//html += '<tr><td colspan=8>';
 //							html += '<div data-role="collapsible" data-mini="true"><h3>Cage ' + cage_num + ' Notes</h3>' +
 //								   '<div id="' + cage_note + cages[i][0] + '"><p><a class="note_add" id="' + cage_id + '" title="cage" href="">Add Note</a><p>There are currently no notes for this cage.</div></div>' + 
 //								   '</td><td>&nbsp;</td></tr>';
@@ -165,7 +191,6 @@
 							var now_milliseconds = now.getTime();
 							var mice_in_cage = result.mice[cages[i][0]];
 
-							html += '<tr><th>Id</th><th>Sex</th><th>Birth-date</th><th>Age (wks)</th><th>Wean-date</th><th>Type</th><th>Strain</th><th>Genotype<th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th></tr>';
 							for (var j=0; j<mice_in_cage.length; j++) {
 								var birth = mice_in_cage[j][10]*1000;
 //var birth_date = new Date(birth);
@@ -173,7 +198,7 @@
 								age_in_weeks = age_in_weeks.toFixed(1);
 	// HERE NEED TO MAKE ROW_ID SO WE CAN CULL THE MICE AND NOT HAVE THE INTERFACE UPDATE
 								var row_id = "mouseRow" + mice_in_cage[j][0];
-								html += '<tr id="' + row_id + '">';
+								html += '<tr id="' + row_id + '" title="' + table_id + '">';
 								if (!mice_in_cage[j][3])
 									mice_in_cage[j][3] = '-';
 
@@ -211,6 +236,10 @@
 
 								if (!mice_in_cage[j][3] || mice_in_cage[j][3] == "-")
 									quick_buttons += '<a class="quick_mouse_edit" id="' + mice_in_cage[j][0]  + '" title="wean_date:now:' + mice_in_cage[j][0] + '" data-mini="true" href="#" data-inline="true" data-role="button">Wean</a>';
+
+								/* set up the quick move */
+
+								quick_buttons += '<a class="quick_move" id="' + mice_in_cage[j][0]  + '" title="' +table_id + '" data-mini="true" href="#" data-inline="true" data-icon="forward" data-role="button"><span class="move_to">' + MOUSE.quick_move_cage + '</span></a>';
 //								else debug(mice_in_cage[j][0] + ' weaned ' + mice_in_cage[j][3]);
 
 								if (quick_buttons.length)
@@ -225,14 +254,16 @@
 
 							if (isolator_id != 0) {
 								
-								html += '<tr><td colspan=4><a data-mini="true" class="add_mouse_button" id="' + cage_id  + '" title=' + cages[i][0] +  ' href="#" data-role="button">Add mice to cage ' + cage_num + '</a></td><td>&nbsp;</td></tr>';
+								html += '<tfoot><tr><td colspan=4><a data-mini="true" class="add_mouse_button" id="' + cage_id  + '" title=' + cages[i][0] +  ' href="#" data-role="button">Add mice to cage ' + cage_num + '</a></td><td>&nbsp;</td></tr></tfoot>';
 							}
 							html += '</table>';
 							
 						}
 						else { 
 							if (isolator_id != 0)
-								html += '<p><a class="add_mouse_button" id="' + cage_id  + '" title=' + cages[i][0] +  ' href="#" data-role="button">Add mice to empty cage ' + cage_num + '</a></p>'; 
+								html += '<tfoot><tr><td colspan=4><a data-mini="true" class="add_mouse_button" id="' + cage_id  + '" title=' + cages[i][0] +  ' href="#" data-role="button">Add mice to cage ' + cage_num + '</a></td><td>&nbsp;</td></tr></tfoot>';
+								html += '</table>';
+								//html += '<tr id="add_mouse' + table_id><td colspan=8><a class="add_mouse_button" id="' + cage_id  + '" title=' + cages[i][0] +  ' href="#" data-role="button">Add mice to empty cage ' + cage_num + '</a></td></tr>'; 
 //								html += '<p><a class="add_mouse_button" id="' + cage_id  + '" title=' + cages[i][0] +  ' href="#" data-role="button">Add mice to empty cage ' + cages[i][0] + '</a></p>'; 
 						}
 					}
@@ -325,6 +356,29 @@
 						});
 						return false;
 					});
+					$('.quick_move').click(function() {
+						var mouse_id = this.id;
+						var table_id = this.title;
+						var row_id = "mouseRow" + mouse_id;
+						var destination_table = 'cage' + MOUSE.quick_move_table;
+//						MOUSE.quick_move_table = table_selected;
+//						MOUSE.quick_move_cage = cage_selected;
+						// FIRST CHECK IF IN SAME TABLE
+						if (table_id == MOUSE.quick_move_table)
+							return false; // don't move into same table
+						
+						var url_cull = MOUSE.url + "?move_mouse=1" + "&mouseId=" + mouse_id + "&cage_select=" + MOUSE.quick_move_table;
+						$.getJSON(url_cull, function(res2) {
+							if (res2.success) {
+								// detach the row from the DOM
+								$('#' + row_id).attr('title',MOUSE.quick_move_table);
+								var row = $('#' + row_id).detach();
+								$('#' + destination_table + ' > tbody > tr:last').after(row);
+							}
+						});
+						return false;
+//								html += '<tr id="' + row_id + '" title="' + table_id + '">';
+					});
 					$('.add_mouse_button').click(function() {
 						var cage_id = this.title;
 						debug('add mice to cage ' + cage_id);
@@ -334,6 +388,15 @@
 						add_mice($pane, MOUSE, cage_id, isolator_id, isolator_info, result.mice[cage_id]);
 						return false;
 	
+					});
+					$('#quick_table_move').change(function(e,passed) {
+						var table_selected = $('#quick_table_move').val();
+						var cage_selected = option_to_value[table_selected];
+						MOUSE.quick_move_table = table_selected;
+						MOUSE.quick_move_cage = cage_selected;
+						var cage_text = 'cage ' + cage_selected;
+//						debug('selected ' + table_selected + 'cage: ' + cage_selected);
+						$('.move_to').text(cage_text);
 					});
 				}
 				else {
@@ -615,7 +678,7 @@
 
 			return html;
 		}
-		function write_select(label, name, id, options, selected, show_blank) {
+		function write_select(label, name, id, options, selected, show_blank, values) {
 			var html = '<div data-role="fieldcontain">'+
 				'<label for="select-choice-1" class="select">' + label + ':</label>' +
 				'<select name="' + name + '" id="' + id + '">';
@@ -629,11 +692,14 @@
 
 			for (var i=0; i<options.length; i++) {
 				var option = options[i];
+				var value = option;
+				if (values)
+					value = values[i];
 
 				if (i == selected)
-					html += '<option value="' + option + '" selected>' + option + '</option>';
+					html += '<option value="' + option + '" selected>' + value + '</option>';
 				else
-					html += '<option value="' + option + '">' + option + '</option>';
+					html += '<option value="' + option + '">' + value + '</option>';
 			}
 			html += '</select></div>';
 
@@ -725,7 +791,6 @@
 			}
 				
 
-//blah
 			return 0;
 		}
 
@@ -741,7 +806,6 @@
 			html += write_radio('mouseType', 'Mouse Type',
 				[['breederType','breeder','Breeder'],['experimentalType','experimental','Experimental','checked']]);
 
-//blah
 
 			var default_strain = 1;
 			var default_genotype = 1;
