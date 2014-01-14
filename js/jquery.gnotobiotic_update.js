@@ -326,9 +326,9 @@
 								/* don't allow easy sex change anymore */
 								$('.quick_mouse_edit[title="mouseSex:male:' + mouse_id + '"]').hide();
 								$('.quick_mouse_edit[title="mouseSex:female:' + mouse_id + '"]').hide();
-								if (key_val[1] == "male") { // don't let males accidentally be culled
-									$('.cull_mouse[title="mouseCull' + mouse_id + '"]').hide();
-								}
+					//			if (key_val[1] == "male") { // don't let males accidentally be culled
+					//				$('.cull_mouse[title="mouseCull' + mouse_id + '"]').hide();
+					//			}
 							}
 							else if (key_val[0] == "wean_date") {
 //								$('.quick_mouse_edit[title="mouseWean:now:' + mouse_id + '"]').hide();
