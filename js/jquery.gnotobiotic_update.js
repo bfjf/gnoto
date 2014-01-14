@@ -167,7 +167,8 @@
 //
 					html += write_select('Quick move cage destination', 'quick_table_move', 'quick_table_move', options, 0, 0, values);
 					MOUSE.quick_move_table = options[0];
-					MOUSE.quick_move_cage = values[0];
+//					MOUSE.quick_move_cage = values[0];
+					MOUSE.quick_move_cage = option_to_value[options[0]];
 					//debug('length is ' + cages.length);
 	
 					var sex_to_short = {undetermined:'?',male:'M',female:'F'};
@@ -394,7 +395,8 @@
 						var cage_selected = option_to_value[table_selected];
 						MOUSE.quick_move_table = table_selected;
 						MOUSE.quick_move_cage = cage_selected;
-						var cage_text = 'cage ' + cage_selected;
+						//var cage_text = 'cage ' + cage_selected;
+						var cage_text =  cage_selected;
 //						debug('selected ' + table_selected + 'cage: ' + cage_selected);
 						$('.move_to').text(cage_text);
 					});
