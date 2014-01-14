@@ -81,6 +81,19 @@ elseif ($_GET['get_available_mice']) {
 	$JSON = get_available_mice($db);
 	echo json_encode($JSON);
 }
+elseif ($_GET['qr_codes']) {
+        write_qr_codes($db);
+}
+elseif ($_GET['morgue']) {
+        $JSON = get_deceased_mice($db);
+        echo json_encode($JSON);
+}
+elseif ($_GET['revive_mouse']) {
+        revive_mouse($db);
+}
+elseif ($_GET['cull_mouse']) {
+        cull_mouse($db);
+}
 //elseif ($_GET['quick_mouse_edit']) {
 //	quick_mouse_edit($db);
 //}
