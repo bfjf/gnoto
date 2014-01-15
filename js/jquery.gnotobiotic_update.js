@@ -225,7 +225,7 @@
 //								if (mice_in_cage[j][1] != "male" && mice_in_cage[j][6] != "breeder")
 								/* only make it easy to cull animals that are NOT breeders */
 								if (mice_in_cage[j][6] != "breeder")
-									quick_buttons += '<a class="cull_mouse" id="' + mice_in_cage[j][0]  + '" title="mouseCull' + mice_in_cage[j][0] + '" data-mini="true" href="#" data-inline="true" data-role="button">Cull</a>';
+									quick_buttons += '<a class="cull_mouse" id="' + mice_in_cage[j][0]  + '" title="mouseCull' + mice_in_cage[j][0] + '" data-mini="true" data-icon="delete" href="#" data-inline="true" data-role="button">Cull</a>';
 //								else
 //									html += '<td>&nbsp;</td>';
 
