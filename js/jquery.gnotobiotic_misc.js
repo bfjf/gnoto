@@ -74,9 +74,11 @@
 
 
 				/* give the global numbers */
-				html += '<tr><td><b>Group</b></td><th>Total mice</th><th>Breeders</th></tr>';
-				html += '<tr><td>All</td><td>' + results.current_mice + '</td><td>' + results.breeders + '</td></tr>';
-				html += '<tr><td colspan=3>&nbsp</td></tr>';
+				html += '<tr><td><b>Strain</b></td><td><b>Genotype</b></td><th>Total mice</th><th>Breeders</th></tr>';
+				html += '<tr><td colspan=4 align=center><i>Total Facility Census</i></td></tr>';
+				html += '<tr><td>all</td><td>all</td><td>' + results.current_mice + '</td><td>' + results.breeders + '</td></tr>';
+				html += '<tr><td colspan=4 align=center>&nbsp;</td></tr>';
+				html += '<tr><td colspan=4 align=center><i>Census by Strain/Genotype</i></td></tr>';
 
 
 
@@ -91,7 +93,13 @@
 					if (!res.breeders)
 						res.breeders = 0;
 
-					html += '<tr><td>' + keys[i] + '</td><td>' + res.current_mice + '</td><td>' + res.breeders + '</td></tr>';
+					var names = keys[i].split("|");
+					var name = names[0];
+
+					if (!names[1])
+						names[1] = '';
+
+					html += '<tr><td>' + names[0] + '</td><td>' + names[1] + '</td><td>' + res.current_mice + '</td><td>' + res.breeders + '</td></tr>';
 				}
 
 				html += '</table>';
