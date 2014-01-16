@@ -28,6 +28,8 @@
 				init_strains($pane, MOUSE);
 			else if (options && options.show == "genotypes")
 				init_genotypes($pane, MOUSE);
+			else if (options && options.show == "stats")
+				init_stats($pane, MOUSE);
 			else
 				init_misc($pane, MOUSE);
 
@@ -62,6 +64,81 @@
                                 '</div>';
                         $pane.html(html).trigger('create');
                 }
+		function init_stats($pane, MOUSE) {
+			var url = MOUSE.url + "?summary_stats=1";
+			var message_pane = 'stats_messages';
+			$.getJSON(url, function(results) {
+				var html='<h2>Summary Statistics</h2><div id="' + message_pane + '"></div>';
+				html+='<h3>Census</h3>';
+				html += '<table>';
+
+
+				/* give the global numbers */
+				html += '<tr><td><b>Group</b></td><th>Total mice</th><th>Breeders</th></tr>';
+				html += '<tr><td>All</td><td>' + results.current_mice + '</td><td>' + results.breeders + '</td></tr>';
+				html += '<tr><td colspan=3>&nbsp</td></tr>';
+
+
+
+				/* now separate things out by strain/genotype combination  */
+				var strain_data = results.by_strain;
+				var keys = sort_keys(strain_data);
+
+				for (var i=0; i<keys.length; i++) {
+					var res = strain_data[keys[i]];
+					html += '<tr><td>' + keys[i] + '</td><td>' + res.current_mice + '</td><td>' + res.breeders + '</td></tr>';
+				}
+
+				html += '</table>';
+
+				html += '<h3>Productivity</h3>';
+				html += '<div id="plot_pane" style="height:300px;"></div>';
+				$pane.html(html).trigger('create');
+
+				add_isolator_productivity('plot_pane', results.productivity);
+
+
+			});
+			//for (var i=0; i<results.length; i++)
+
+			//}
+
+		}
+
+		function add_isolator_productivity(pane_id, date_births) {
+			var date_plot = [];
+
+			if (! date_births || date_births.length < 1) {
+				debug('skipping stats');
+				$('#' + pane_id).hide();
+				return;
+			}
+			else  {
+				debug('plotting isolator');
+				$('#' + pane_id).show();
+			}
+
+			for (var i=0; i<date_births.length; i++) {
+				date_plot[i] = [date_births[i][0]*1000, date_births[i][1]];
+			}
+			$.jqplot(pane_id, [date_plot], {
+				title:'Productivity (each point = 3 weeks)',
+				axesDefaults: {
+					labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+				},
+				axes:{
+					yaxis:{
+						label:'mice'
+					},
+					xaxis:{
+						renderer:$.jqplot.DateAxisRenderer,
+						tickOptions:{formatString:'%x'}
+					}
+				       },
+					series:[{showLine:false}]
+			});
+		}
+
 		function init_genotypes($pane, MOUSE) {
 			debug('in init_genotypes');
 			var url = MOUSE.url + "?get_genotypes=1";
@@ -205,13 +282,15 @@
 		/* MISC PANE */
 		function init_misc($pane, MOUSE) {
 			var html = '<h3>Miscellaneous tools</h3>';
-			html += '<a data-ajax=false data-role="button" href="mouse.php?qr_codes=1">Print isolator barcodes</a>';
 			var morgue_button = 'morgue_button';
 			var strain_button = 'strain_button';
 			var genotype_button = 'genotype_button';
-			html += '<a id="' + morgue_button  + '" title="morgue_button" href="#misc?morgue" data-role="button">Morgue</a>';
-			html += '<a id="' + strain_button  + '" title="strain_button" href="#misc?strains" data-role="button">Strains</a>';
-			html += '<a id="' + genotype_button  + '" title="genotype_button" href="#misc?genotypes" data-role="button">Genotypes</a>';
+			var stats_button = 'stats_button';
+			html += '<a id="' + morgue_button  + '" title="morgue_button" href="#misc?morgue" data-role="button">Morgue (recover accidentally removed mice)</a>';
+			html += '<a id="' + stats_button  + '" title="stats_button" href="#misc?stats" data-role="button">Facility Summary Statistics</a>';
+			html += '<a id="' + strain_button  + '" title="strain_button" href="#misc?strains" data-role="button">Add Strains</a>';
+			html += '<a id="' + genotype_button  + '" title="genotype_button" href="#misc?genotypes" data-role="button">Add Genotypes</a>';
+			html += '<a data-ajax=false data-role="button" href="mouse.php?qr_codes=1">Print isolator barcodes</a>';
 			$pane.html(html).trigger('create');
 			if (MOUSE.callback) {
 				MOUSE.callback();

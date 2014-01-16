@@ -478,14 +478,7 @@
 						},
                                               xaxis:{
                                                renderer:$.jqplot.DateAxisRenderer, 
-//                                                tickOptions:{formatString:'%b %#d, %y'},
-//                                                tickOptions:{formatString:'%m/%y'},
-        //                                        tickOptions:{formatString:'%x'},
                                                 tickOptions:{formatString:'%x'}
-//                                              min:'May 30, 2008', 
-//                                              min:'Aug 30, 2011', 
-       //                                       min:'Aug 30, 2011'
-//                                                tickInterval:'3 months'
                                               }
                                             },
                                             series:[{showLine:false}]

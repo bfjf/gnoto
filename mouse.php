@@ -94,6 +94,10 @@ elseif ($_GET['revive_mouse']) {
 elseif ($_GET['cull_mouse']) {
         cull_mouse($db);
 }
+elseif ($_GET['summary_stats']) {
+        $JSON = get_summary_stats($db);
+        echo json_encode($JSON);
+}
 //elseif ($_GET['quick_mouse_edit']) {
 //	quick_mouse_edit($db);
 //}
@@ -517,20 +521,38 @@ function get_cages($db) {
 	return $results;
 }
 
+function get_productivity($db) {
+	$query = "select (death_date-birth_date)/60/60/24/7, birth_date, death_date from mouse m, cage c where c.cage_id=m.cage_id ORDER BY birth_date";
+	$result1 = $db->query($query);
+
+	$query = "select (m.death_date-m.birth_date)/60/60/24/7, m.birth_date, m.death_date, m.mouse_id, m2.mouse_id, m.cage_id, m2.cage_id from mouse m, mouse m2, mouse_to_parent mtp, cage c2, cage c1 WHERE m.mouse_id=mtp.mouse_id AND mtp.parent_id=m2.mouse_id AND m2.cage_id=c2.cage_id AND m.cage_id=c1.cage_id AND c1.isolator_id=0";
+	$result2 = $db->query($query);
+
+	$results = calculate_productivity($result1, $result2);
+
+	return $results;
+}
+
 function get_isolator_productivity($isolator_id, $db) {
-
-	$first = 0;
-	$results = array();
-	$temp_results = array();
-
-	
-	$min_survival_to_include = 1; # only keep mice that survive at least 1 week
 	$query = "select (death_date-birth_date)/60/60/24/7, birth_date, death_date from mouse m, cage c where c.isolator_id=$isolator_id AND c.cage_id=m.cage_id ORDER BY birth_date";
-	$result = $db->query($query);
+	$result1 = $db->query($query);
+
+	$query = "select (m.death_date-m.birth_date)/60/60/24/7, m.birth_date, m.death_date, m.mouse_id, m2.mouse_id, m.cage_id, m2.cage_id from mouse m, mouse m2, mouse_to_parent mtp, cage c2, cage c1 WHERE m.mouse_id=mtp.mouse_id AND mtp.parent_id=m2.mouse_id AND m2.cage_id=c2.cage_id AND c2.isolator_id=$isolator_id AND m.cage_id=c1.cage_id AND c1.isolator_id=0";
+	$result2 = $db->query($query);
+
+	$results = calculate_productivity($result1, $result2);
+
+	return $results;
+}
+
+function calculate_productivity($result1, $result2) {
+	$results = array();
+	$min_survival_to_include = 1; # only keep mice that survive at least 1 week
+	$temp_results = array();
 	$now = time();
 	$time_window = 21; # how many days to put in a block
 	$time_alive_weeks;
-	while($row = $result->fetchArray(SQLITE3_NUM)) {
+	while($row = $result1->fetchArray(SQLITE3_NUM)) {
 		$time_alive = $row[0];
 
 		if ($row[2] == 0) { # mouse not dead
@@ -546,9 +568,7 @@ function get_isolator_productivity($isolator_id, $db) {
 	}
 
 	# don't forget to include the children that have left
-	$query = "select (m.death_date-m.birth_date)/60/60/24/7, m.birth_date, m.death_date, m.mouse_id, m2.mouse_id, m.cage_id, m2.cage_id from mouse m, mouse m2, mouse_to_parent mtp, cage c2, cage c1 WHERE m.mouse_id=mtp.mouse_id AND mtp.parent_id=m2.mouse_id AND m2.cage_id=c2.cage_id AND c2.isolator_id=$isolator_id AND m.cage_id=c1.cage_id AND c1.isolator_id=0";
-	$result = $db->query($query);
-	while($row = $result->fetchArray(SQLITE3_NUM)) {
+	while($row = $result2->fetchArray(SQLITE3_NUM)) {
 		$time_alive = $row[0];
 
 		if ($row[2] == 0) { # mouse not dead
@@ -605,6 +625,37 @@ function get_mouse_info($db, $cage_id) {
 		
 		$results[] = $row;
 	}
+
+	return $results;
+}
+
+function get_summary_stats($db) {
+	$results = array();
+#	$result = $db->query("SELECT mouse_id, sex, birth_date, strain, genotype FROM mouse WHERE death_date AND mouse_type='experimental'");
+	$result = $db->query("SELECT mouse_id, sex, birth_date, strain, genotype, mouse_type FROM mouse WHERE death_date=0");
+
+	$num_mice = 0;
+	$num_breeders = 0;
+
+	$strain_level = array();
+	while($row = $result->fetchArray(SQLITE3_NUM)) {
+#		$results['mice'][] = $row;
+		$num_mice++;
+
+		$name = $row[3] . "|" . $row[4]; 
+#		echo $name  . "<BR>";
+		$strain_level[$name]['current_mice']++;
+
+		if ($row[5] == "breeder") {
+			$num_breeders++;
+			$strain_level[$name]['breeders']++;
+		}
+	}
+
+	$results['current_mice'] = $num_mice;
+	$results['breeders'] = $num_breeders;
+	$results['by_strain'] = $strain_level;
+	$results['productivity'] = get_productivity($db);
 
 	return $results;
 }
