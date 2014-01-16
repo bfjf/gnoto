@@ -86,6 +86,11 @@
 
 				for (var i=0; i<keys.length; i++) {
 					var res = strain_data[keys[i]];
+					if (!res.current_mice)
+						res.current_mice = 0;
+					if (!res.breeders)
+						res.breeders = 0;
+
 					html += '<tr><td>' + keys[i] + '</td><td>' + res.current_mice + '</td><td>' + res.breeders + '</td></tr>';
 				}
 
