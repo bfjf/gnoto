@@ -224,8 +224,8 @@ function add_mice($db) {
 	$mouseSex = $_GET['mouseSex'];
 	$mouseType = $_GET['mouseType'];
 	$birthDate = strtotime($_GET['birth_date']);
-	$strain = $_GET['strain'];
-	$genotype = $_GET['genotype'];
+	$strain = $_GET['mouseStrain'];
+	$genotype = $_GET['mouseGenotype'];
 	$cageId = $_GET['cage_id'];
 	$num_mice = $_GET['num_mice'];
 	$wean_date = 0;
