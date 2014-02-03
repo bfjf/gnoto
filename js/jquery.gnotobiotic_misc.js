@@ -75,9 +75,9 @@
 
 				var mice = results.mice;
 
-				html += '<tr><td><b>Id</b></td><td><b>Age (days)</b></td><td><b>Strain</b></td><td><b>Genotype</b></td><th>Isolator</th><th>Cage</th></tr>';
+				html += '<tr><td><b>Id</b></td><td><b>Age (days)</b></td><td><b>Strain</b></td><td><b>Genotype</b></td><th>Isolator</th></tr>';
 				for (var i=0; i<mice.length; i++) {
-					html += '<tr><td>' + mice[i][0] + '</td><td>' + mice[i][1] + '</td><td>' + mice[i][2] + '</td><td>' + mice[i][3] + '</td><td>' + mice[i][4] + '</td><td>' + mice[i][5] + '</td></tr>';
+					html += '<tr><td>' + mice[i][0] + '</td><td>' + mice[i][1] + '</td><td>' + mice[i][2] + '</td><td>' + mice[i][3] + '</td><td>' + mice[i][4] +  '</td></tr>';
 				}
 
 				html += '</table>';

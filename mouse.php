@@ -671,7 +671,8 @@ function get_just_born($db) {
 #	$time_window = 10; # how many days to put in a block
 	$min_date = $now - (60*60*24*$time_window);
 
-	$query = "SELECT mouse_id, birth_date, strain, genotype, m.cage_id, c.isolator_id FROM mouse m, cage c where m.cage_id=c.cage_id AND m.death_date=0 AND birth_date > $min_date ORDER BY birth_date DESC";
+#	$query = "SELECT mouse_id, birth_date, strain, genotype, m.cage_id, c.isolator_id FROM mouse m, cage c where m.cage_id=c.cage_id AND m.death_date=0 AND birth_date > $min_date ORDER BY birth_date DESC";
+	$query = "SELECT mouse_id, birth_date, strain, genotype, c.isolator_id FROM mouse m, cage c where m.cage_id=c.cage_id AND m.death_date=0 AND birth_date > $min_date ORDER BY birth_date DESC";
 #	echo $query;
 	$result = $db->query($query);
 
@@ -682,7 +683,6 @@ function get_just_born($db) {
 		$row[1] = -1*round((($row[1] - $now)/ $time_to_days),0);
 		$results['mice'][] = $row;
 	}
-# blah
 
 
 	return $results;
