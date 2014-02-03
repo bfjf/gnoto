@@ -30,6 +30,8 @@
 				init_genotypes($pane, MOUSE);
 			else if (options && options.show == "stats")
 				init_stats($pane, MOUSE);
+			else if (options && options.show == "born")
+				init_just_born($pane, MOUSE);
 			else
 				init_misc($pane, MOUSE);
 
@@ -64,6 +66,24 @@
                                 '</div>';
                         $pane.html(html).trigger('create');
                 }
+		function init_just_born($pane, MOUSE) {
+			var message_pane = 'born_messages';
+			var url = MOUSE.url + "?just_born=1";
+			$.getJSON(url, function(results) {
+				var html='<h2>Just Born</h2><div id="' + message_pane + '"></div>';
+				html += '<table>';
+
+				var mice = results.mice;
+
+				html += '<tr><td><b>Id</b></td><td><b>Age (days)</b></td><td><b>Strain</b></td><td><b>Genotype</b></td><th>Isolator</th><th>Cage</th></tr>';
+				for (var i=0; i<mice.length; i++) {
+					html += '<tr><td>' + mice[i][0] + '</td><td>' + mice[i][1] + '</td><td>' + mice[i][2] + '</td><td>' + mice[i][3] + '</td><td>' + mice[i][4] + '</td><td>' + mice[i][5] + '</td></tr>';
+				}
+
+				html += '</table>';
+				$pane.html(html).trigger('create');
+			});
+		}
 		function init_stats($pane, MOUSE) {
 			var url = MOUSE.url + "?summary_stats=1";
 			var message_pane = 'stats_messages';
@@ -299,8 +319,10 @@
 			var strain_button = 'strain_button';
 			var genotype_button = 'genotype_button';
 			var stats_button = 'stats_button';
+			var born_button = 'born_button';
 			html += '<a id="' + morgue_button  + '" title="morgue_button" href="#misc?morgue" data-role="button">Morgue (recover accidentally removed mice)</a>';
 			html += '<a id="' + stats_button  + '" title="stats_button" href="#misc?stats" data-role="button">Facility Summary Statistics</a>';
+			html += '<a id="' + born_button  + '" title="born_button" href="#misc?born" data-role="button">Just Born</a>';
 			html += '<a id="' + strain_button  + '" title="strain_button" href="#misc?strains" data-role="button">Add Strains</a>';
 			html += '<a id="' + genotype_button  + '" title="genotype_button" href="#misc?genotypes" data-role="button">Add Genotypes</a>';
 			html += '<a data-ajax=false data-role="button" href="mouse.php?qr_codes=1">Print isolator barcodes</a>';

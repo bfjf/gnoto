@@ -81,6 +81,10 @@ elseif ($_GET['get_available_mice']) {
 	$JSON = get_available_mice($db);
 	echo json_encode($JSON);
 }
+elseif ($_GET['just_born']) {
+	$JSON = get_just_born($db);
+	echo json_encode($JSON);
+}
 elseif ($_GET['qr_codes']) {
         write_qr_codes($db);
 }
@@ -656,6 +660,30 @@ function get_summary_stats($db) {
 	$results['breeders'] = $num_breeders;
 	$results['by_strain'] = $strain_level;
 	$results['productivity'] = get_productivity($db);
+
+	return $results;
+}
+
+function get_just_born($db) {
+
+	$now = time();
+	$time_window = 21; # how many days to put in a block
+#	$time_window = 10; # how many days to put in a block
+	$min_date = $now - (60*60*24*$time_window);
+
+	$query = "SELECT mouse_id, birth_date, strain, genotype, m.cage_id, c.isolator_id FROM mouse m, cage c where m.cage_id=c.cage_id AND m.death_date=0 AND birth_date > $min_date ORDER BY birth_date DESC";
+#	echo $query;
+	$result = $db->query($query);
+
+	$time_to_days = 60*60*24;
+	while($row = $result->fetchArray(SQLITE3_NUM)) {
+		$now - $row[1];
+#		$row[1] = -1*round((($row[1] - $now)/ $time_to_days),1);
+		$row[1] = -1*round((($row[1] - $now)/ $time_to_days),0);
+		$results['mice'][] = $row;
+	}
+# blah
+
 
 	return $results;
 }
