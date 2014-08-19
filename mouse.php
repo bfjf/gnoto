@@ -26,6 +26,10 @@ elseif ($_GET['add_cage']) {
 	$JSON = add_cage($db);
 	echo json_encode($JSON);
 }
+elseif ($_GET['add_type']) {
+	$JSON = add_type($db);
+	echo json_encode($JSON);
+}
 elseif ($_GET['add_strain']) {
 	$JSON = add_strain($db);
 	echo json_encode($JSON);
@@ -48,6 +52,10 @@ elseif ($_GET['edit_mouse']) {
 }
 elseif ($_GET['get_strains']) {
 	$JSON = get_strains($db);
+	echo json_encode($JSON);
+}
+elseif ($_GET['get_types']) {
+	$JSON = get_types($db);
 	echo json_encode($JSON);
 }
 elseif ($_GET['get_genotypes']) {
@@ -380,6 +388,20 @@ function add_strain($db) {
 	return $results;
 }
 
+function add_type($db) {
+	$results = array();
+	$type_name = $_GET['type_name'];
+	$type_desc = $_GET['type_description'];
+
+	$insert = "INSERT INTO assignable VALUES('$type_name', '$type_desc')";
+
+	$ok = $db->exec($insert);
+	if (!$ok) { $results['error'] =  "Error inserting: " . $db->lastErrorMsg() . "<BR>"; }
+	else { $results['success']=1; }
+
+	return $results;
+}
+
 
 function add_cage($db) {
 	$results = array();
@@ -472,6 +494,17 @@ function get_strains($db) {
 
 	return $results;
 }
+
+function get_types($db) {
+	$results = array();
+	$result = $db->query('SELECT assign, description FROM assignable');
+	while($row = $result->fetchArray(SQLITE3_NUM)) {
+		$results[] = $row;
+	}
+
+	return $results;
+}
+
 
 function get_cages($db) {
 	$isolator_id = $_GET['isolator_id'];

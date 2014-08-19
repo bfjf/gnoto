@@ -32,6 +32,8 @@
 				init_stats($pane, MOUSE);
 			else if (options && options.show == "born")
 				init_just_born($pane, MOUSE);
+			else if (options && options.show == "types")
+				init_assignable($pane, MOUSE);
 			else
 				init_misc($pane, MOUSE);
 
@@ -216,6 +218,56 @@
 
 
 		}
+		function init_assignable($pane, MOUSE) {
+			var url = MOUSE.url + "?get_types=1";
+			var message_pane = 'type_messages';
+			var html='<h2>Current Types</h2><div id="' + message_pane + '"></div>';
+			$.getJSON(url, function(results) {
+				html += '<table>';
+				html += "<tr><td><b>Type</b></td><td><b>Description</b></td></tr>";
+				html += "<tr><td>Breeder</td><td>special assignment to designate breeding mice</td></tr>";
+				html += "<tr><td>NA</td><td>not assigned (not yet reserved for a downstream experiment)</td></tr>";
+				for (var i=0; i<results.length; i++)
+					html += "<tr><td>" + results[i][0] + "</td><td>" + results[i][1] + "</td></tr>";
+
+				html += '</table><br/>';
+
+				html += '<hr/>';
+				html +='<h2>Add new type</h2>';
+
+				html += '<p>Please use the following naming convention = <i>PI_initials</i> OR <i>PI_initials:Trainee_initials</i> for example <pre>JJF:SL</pre></p>';
+				html += '<form id="add_type_form">';
+                        	html += '<input type="hidden" name="add_type" id="add_type" value="1"/>';
+				html += '<div data-role="fieldcontain">';
+                                html += '<label for="select_name" class="select">Type Name:</label>';
+                        	html += '<input maxlength=7 type="text" name="type_name" id="type_name"/>';
+				html += '</div>';
+				html += '<div data-role="fieldcontain">';
+                                html += '<label for="select_name" class="select">Type Description:</label>';
+                        	html += '<input type="text" name="type_description" id="type_description"/>';
+				html += '</div>';
+				html += '<button type="submit" data-theme="b" name="submit" value="submit-value">Submit</button>';
+				html += '</form>';
+				$pane.html(html).trigger('create');
+
+
+				$('#add_type_form').submit(function(){
+					debug($(this).serialize());
+                                        var urlB = MOUSE.url + '?' + $(this).serialize();
+                                        debug('url is ' + urlB);
+                                        $.getJSON(urlB, function(result) {
+                                                if (result.success) {
+                                                        MyAppRouter.navigate("");
+                                                        MyAppRouter.navigate("#misc?types", {trigger:true});
+//                                                        MyAppRouter.navigate("#misc?strains");
+                                                }
+                                                else
+                                                        $('#' + message_pane).html('<b>Error:</b> could not add type (' + result.error + ')');
+					});
+					return false;
+                        	});
+			});
+		}
 		function init_strains($pane, MOUSE) {
 			var url = MOUSE.url + "?get_strains=1";
 			var message_pane = 'strain_messages';
@@ -320,11 +372,23 @@
 			var genotype_button = 'genotype_button';
 			var stats_button = 'stats_button';
 			var born_button = 'born_button';
-			html += '<a id="' + morgue_button  + '" title="morgue_button" href="#misc?morgue" data-role="button">Morgue (recover accidentally removed mice)</a>';
+			var type_button = 'type_button';
+
+
+
+			html += '<h5>Facility overviews:</h5>';
 			html += '<a id="' + stats_button  + '" title="stats_button" href="#misc?stats" data-role="button">Facility Summary Statistics</a>';
 			html += '<a id="' + born_button  + '" title="born_button" href="#misc?born" data-role="button">Just Born</a>';
+
+			html += '<h5>Accident recovery:</h5>';
+			html += '<a id="' + morgue_button  + '" title="morgue_button" href="#misc?morgue" data-role="button">Morgue (recover accidentally removed mice)</a>';
+
+			html += '<h5>Database additions:</h5>';
 			html += '<a id="' + strain_button  + '" title="strain_button" href="#misc?strains" data-role="button">Add Strains</a>';
 			html += '<a id="' + genotype_button  + '" title="genotype_button" href="#misc?genotypes" data-role="button">Add Genotypes</a>';
+			html += '<a id="' + type_button  + '" title="type_button" href="#misc?types" data-role="button">Add Mouse Types (assignables)</a>';
+
+			html += '<h5>Isolator labels:</h5>';
 			html += '<a data-ajax=false data-role="button" href="mouse.php?qr_codes=1">Print isolator barcodes</a>';
 			$pane.html(html).trigger('create');
 			if (MOUSE.callback) {
