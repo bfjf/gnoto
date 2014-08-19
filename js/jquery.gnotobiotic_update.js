@@ -144,6 +144,7 @@
 
 				MOUSE.strains = result.strains;
 				MOUSE.genotypes = result.genotypes;
+				MOUSE.types = result.types;
 				MOUSE.cages = result.cages;
 				MOUSE.isolators = result.isolators;
 				MOUSE.quick_move_table = 0;
@@ -504,20 +505,31 @@
 				else 
 					html += '<div>Strain: ' + result[7] + '</div>';
 
-				if (everything_editable) {
+/*				if (everything_editable) {
 					if (result[6] == 'breeder')
 						html += write_radio('mouseType', 'Mouse Type',
-							[['breederType','breeder','Breeder','checked'],['experimentalType','experimental','Experimental'],['experimentType','experiment','Experiment']]);
+							[['breederType','breeder','Breeder','checked'],['experimentalType','unassigned','Unassigned'],['experimentType','reserve','Reserve']]);
 					else if (result[6] == 'experimental')
 						html += write_radio('mouseType', 'Mouse Type',
-							[['breederType','breeder','Breeder'],['experimentalType','experimental','Experimental','checked'],['experimentType','experiment','Experiment']]);
+							[['breederType','breeder','Breeder'],['experimentalType','unassigned','Unassigned','checked'],['experimentType','reserve','Reserve']]);
 					else
 						html += write_radio('mouseType', 'Mouse Type',
-							[['breederType','breeder','Breeder'],['experimentalType','experimental','Experimental'],['experimentType','experiment','Experiment','checked']]);
+							[['breederType','breeder','Breeder'],['experimentalType','unassigned','Unassigned'],['experimentType','experiment','reserve','Reserve']]);
+//					html += '<div data-role="fieldcontain" data-inline="true">';
+//					html += '<label for="assign_name" class="select">Assign To (max 3 letters):</label>';
+//					html += '<input type="text" name="assign_to" maxlength=3 size=3 data-mini="true" id="assign_to"/>';
+//					html += '</div>';
 				}
 				else {
 					html += '<p>Type: ' + result[6] + '</p>';
 				}
+				*/
+				//blah
+//				html += '<div data-role="fieldcontain" data-inline="true">';
+//				html += '<label for="assign_name" class="select">Assign To:</label>';
+//				html += '<input type="text" name="assign_to" data-inline="true" id="assign_to"/>';
+//				 data-inline="true"
+//				html += '</div>';
 	
 				/* mouse sex */
 				if (result[1] == 'undetermined') {
@@ -576,6 +588,7 @@
 				else
 					html += '<p>Genotype: ' + result[8] + '</p>';
 
+				html += write_mouse_type_dialog(result[6], MOUSE.types);
 				html += write_cage_dialog(result[9],MOUSE.cages);
 				html += '<div id="error_pane"></div>';
 				html += '<button type="submit" data-theme="b" name="submit" value="submit-value">Submit</button>';
@@ -632,6 +645,34 @@
 
 			html += '</div>';
 
+			return html;
+		}
+		function write_mouse_type_dialog(selected_type, types) {
+			var html = '<div data-role="fieldcontain">'+
+				'<label for="select-choice-1" class="select">Select a mouse type:</label>' +
+				'<select name="mouseType" id="mouseType">';
+///			mouseType
+
+			var current_isolator = -1;
+
+			var prev_isolator = -1;
+			var cage_num_offset = 0;
+
+			debug('have type ' + selected_type);
+			if (types && types.length) {
+				for (var i=0; i<types.length; i++) {
+	
+					var type_id = types[i];
+
+					if (type_id == selected_type)
+						html += '<option value="' + type_id + '" selected>' + type_id + '</option>';
+					else
+						html += '<option value="' + type_id + '">' + type_id + '</option>';
+//						html += '<option value="' + cage_id + '">Cage ' + cage_id + '</option>';
+				}
+			}
+
+			html += '</select></div>';
 			return html;
 		}
 		function write_cage_dialog(selected_cage,cages) {
@@ -798,8 +839,10 @@
 			html += write_radio('mouseSex', 'Sex',
 				[['sexMale','male','Male'],['sexFemale','female','Female'],['sexUndetermined','undetermined','Undetermined','checked']]);
 
-			html += write_radio('mouseType', 'Mouse Type',
-				[['breederType','breeder','Breeder'],['experimentalType','experimental','Experimental','checked']]);
+//			html += write_radio('mouseType', 'Mouse Type',
+//				[['breederType','breeder','Breeder'],['experimentalType','unassigned','Unassigned','checked']]);
+
+			html += write_mouse_type_dialog('NA', MOUSE.types);
 
 
 			var default_strain = 1;

@@ -520,6 +520,13 @@ function get_cages($db) {
 	}
 
 	$results['isolator_productivity'] = get_isolator_productivity($isolator_id, $db);
+
+	$results['types'][] = "Breeder";
+	$results['types'][] = "NA";
+	$result7 = $db->query('SELECT assign FROM assignable');
+	while($row = $result7->fetchArray(SQLITE3_NUM)) {
+		$results['types'][] = $row;
+	}
 	
 
 	return $results;
@@ -691,7 +698,7 @@ function get_just_born($db) {
 function get_available_mice($db) {
 	$results = array();
 
-	$result = $db->query("SELECT m.mouse_id, sex, birth_date, wean_date, strain, genotype, m.cage_id, c.isolator_id FROM mouse m, cage c where m.cage_id=c.cage_id AND m.death_date=0 AND m.mouse_type='experimental'");
+	$result = $db->query("SELECT m.mouse_id, sex, birth_date, wean_date, strain, genotype, m.cage_id, c.isolator_id FROM mouse m, cage c where m.cage_id=c.cage_id AND m.death_date=0 AND (m.mouse_type='experimental' OR m.mouse_type='unassigned')");
 	while($row = $result->fetchArray(SQLITE3_NUM)) {
 		$results['mice'][] = $row;
 	}

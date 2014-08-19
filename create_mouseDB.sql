@@ -80,6 +80,14 @@ create table genotype
 insert into genotype VALUES('WT');
 insert into genotype VALUES('unknown');
 
+drop table if exists assignable;
+create table assignable
+(assign text NOT NULL UNIQUE /* small, medium, large */
+);
+insert into assignable VALUES('SL');
+insert into assignable VALUES('JJF');
+insert into assignable VALUES('MM');
+
 /*drop table if exists mouse_to_cage;
 create table mouse_to_cage
 (mouse_id integer,
