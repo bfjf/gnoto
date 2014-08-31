@@ -110,6 +110,10 @@ elseif ($_GET['summary_stats']) {
         $JSON = get_summary_stats($db);
         echo json_encode($JSON);
 }
+elseif ($_GET['get_breeder_stats']) {
+	$JSON = get_breeder_stats($db);
+	echo json_encode($JSON);
+}
 //elseif ($_GET['quick_mouse_edit']) {
 //	quick_mouse_edit($db);
 //}
@@ -670,6 +674,77 @@ function get_mouse_info($db, $cage_id) {
 		$results[] = $row;
 	}
 
+	return $results;
+}
+
+function get_breeder_stats($db) {
+	$results = array();
+#	$result = $db->query("select mouse_id, c.cage_id, c.isolator_id, m.birth_date, m.strain, m.genotype from mouse m, cage c where m.mouse_type='breeder' AND m.death_date=0 AND m.sex='female' AND m.cage_id=c.cage_id ORDER BY m.birth_date");
+	$result = $db->query("select mouse_id, c.cage_id, c.isolator_id, m.birth_date, m.strain, m.genotype from mouse m, cage c where m.mouse_type='breeder' AND m.death_date=0 AND m.sex='female' AND m.cage_id=c.cage_id ORDER BY c.isolator_id, m.birth_date");
+
+	$now = time();
+	while($row = $result->fetchArray(SQLITE3_NUM)) {
+		$mouse_id = $row[0];
+		$age_wks = ($now - $row[3]) / (60*60*24*7);
+		$row[3] = round($age_wks, 1);
+		$results['breeders'][] = $row;
+
+		$results['progeny'][$mouse_id] = get_progeny($mouse_id, $db);
+	}
+
+	return $results;
+}
+
+function get_progeny($mouse_id, $db) {
+	$result = $db->query("select m.birth_date, m.death_date, m.death_date-m.birth_date from mouse m, mouse_to_parent mp where mp.parent_id=$mouse_id AND mp.mouse_id=m.mouse_id order by birth_date");
+
+	$now = time();
+	$time_window = 14; # need to be at least 2 weeks old
+#	$min_date = $now - (60*60*24*$time_window);
+		
+	$born_at_date = array();
+	$survived_at_date = array();
+	$min_survival = 10; # need to live 10 days
+	while($row = $result->fetchArray(SQLITE3_NUM)) {
+		$days_ago = round(($now - $row[0]) / (60*60*24), 1);
+
+		$weeks_ago = round($days_ago/7, 1);
+		if ($row[2] < 0) { # not dead yet
+			$days_survived = $days_ago;
+#			echo "$row[0] alive ($days_survived): $mouse_id ago: $weeks_ago<br>";
+			$born_at_date[$weeks_ago]++;
+			if ($days_survived > $min_survival) {
+				$survived_at_date[$weeks_ago]++;
+			}
+#			if ($	
+		}	
+		else { # did they live long enough
+			$days_survived = round($row[2] / (60*60*24),1);
+			$born_at_date[$weeks_ago]++;
+			if ($days_survived > $min_survival) {
+#				echo "$row[0] lived ($days_survived): $mouse_id ago: $weeks_ago<br>";
+				$survived_at_date[$weeks_ago]++;
+			}
+			else {
+#				echo "$row[0] died too young ($days_survived): $mouse_id ago: $weeks_ago<br>";
+			}
+
+		}
+	}
+
+	$results = array();
+	foreach ($born_at_date as $wk=>$num_born) {
+		$num_survive = 0;
+		if ($survived_at_date[$wk]) {
+			$num_survive = $survived_at_date[$wk];
+		}
+#		echo "$wk,$num_born,$num_survive<br>";
+		$row = array($wk, $num_born, $num_survive);
+
+		$results[] = $row;
+	}
+
+#	return "blah";
 	return $results;
 }
 

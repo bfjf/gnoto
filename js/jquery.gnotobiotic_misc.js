@@ -30,6 +30,8 @@
 				init_genotypes($pane, MOUSE);
 			else if (options && options.show == "stats")
 				init_stats($pane, MOUSE);
+			else if (options && options.show == "breeder")
+				init_breeder_stats($pane, MOUSE);
 			else if (options && options.show == "born")
 				init_just_born($pane, MOUSE);
 			else if (options && options.show == "types")
@@ -85,6 +87,38 @@
 				html += '</table>';
 				$pane.html(html).trigger('create');
 			});
+		}
+		function init_breeder_stats($pane, MOUSE) {
+			var url = MOUSE.url + "?get_breeder_stats=1";
+			var message_pane = 'stats_messages';
+			$.getJSON(url, function(results) {
+				var html='<h2>Breeder Statistics</h2><div id="' + message_pane + '"></div>';
+				html += '<table>';
+
+				var b = results.breeders;
+				var p = results.progeny;
+				for (var i=0; i<b.length; i++) {
+					var mouse_id = b[i][0];
+					html += '<tr><th>Mouse ID</th><th>Isolator</th><th>Age (wks)</th><th>strain</th><th>genotype</th></tr>';
+					html += '<tr><td>' + mouse_id + "</td><td>" + b[i][2] + "</td><td>" + b[i][3] + "</td><td>" + b[i][4] + "</td><td>" + b[i][5] + "</td></tr>";
+
+					if (p[mouse_id] && p[mouse_id].length) {
+						html += "<tr><td>&nbsp;</td><td><i>weeks ago</i></td><td><i>born</i></td><td><i>survived</i></td><td>&nbsp;</td></tr>";
+						var res = p[mouse_id];
+						for (var j=0; j<res.length; j++) {
+							html += "<tr><td>&nbsp;</td><td>" + res[j][0] + "</td><td>" + res[j][1] + "</td><td>" + res[j][2] + "</td><td>&nbsp;</td></tr>";
+						}
+					}
+//"</td></tr>"; html += '<tr><td>' + b[i][0] + "</td><td>" + b[i][2] + "</td></tr>";
+				}
+//				html += '<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+
+				html += '</table>';
+
+				$pane.html(html).trigger('create');
+
+			});
+
 		}
 		function init_stats($pane, MOUSE) {
 			var url = MOUSE.url + "?summary_stats=1";
@@ -372,6 +406,7 @@
 			var genotype_button = 'genotype_button';
 			var stats_button = 'stats_button';
 			var born_button = 'born_button';
+			var breeder_button = 'breeder_button';
 			var type_button = 'type_button';
 
 
@@ -379,6 +414,7 @@
 			html += '<h5>Facility overviews:</h5>';
 			html += '<a id="' + stats_button  + '" title="stats_button" href="#misc?stats" data-role="button">Facility Summary Statistics</a>';
 			html += '<a id="' + born_button  + '" title="born_button" href="#misc?born" data-role="button">Just Born</a>';
+			html += '<a id="' + breeder_button  + '" title="breeder_button" href="#misc?breeder" data-role="button">Breeder Statistics</a>';
 
 			html += '<h5>Accident recovery:</h5>';
 			html += '<a id="' + morgue_button  + '" title="morgue_button" href="#misc?morgue" data-role="button">Morgue (recover accidentally removed mice)</a>';
