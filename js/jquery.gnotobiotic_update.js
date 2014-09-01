@@ -147,6 +147,7 @@
 				MOUSE.types = result.types;
 				MOUSE.cages = result.cages;
 				MOUSE.isolators = result.isolators;
+				MOUSE.progeny = result.progeny;
 				MOUSE.quick_move_table = 0;
 				MOUSE.quick_move_cage = 0;
 				var cage_note = 'cage_note';
@@ -257,8 +258,9 @@
 							}
 
 							if (breeders.length) {
+								var mice_ids = breeders.join("_");
 								html += '<tr><td colspan=6>'; 
-								html += '<a href="javascript:void(0);"  class="show_breeder_stats" title="' + cage_id + '">Show breeder stats</a><span id="breeder_stats' + cage_id + '"></span>';
+								html += '<a href="javascript:void(0);"  class="show_breeder_stats" id="breeder_' + mice_ids + '" title="' + cage_id + '">Show breeder stats</a><span id="breeder_stats' + cage_id + '"></span>';
 								html += '</td></tr>';
 							}
 
@@ -303,8 +305,26 @@
 					});
 					$('.show_breeder_stats').click(function() {
 						var cage_id = this.title;
-						$('#breeder_stats' + cage_id).html("<table><tr><td>HELLO</td></tr><tr><td>world</td></tr></table>");
-						debug('showing stats for breeders in cage ' + cage_id);
+						var mice_id_list = this.id;
+						var mice_ids = mice_id_list.split("_");
+						mice_ids.shift(); // don't need first element which is just a unique ID for the html
+						$('#' + mice_id_list).hide();
+						debug('showing stats for breeders in cage ' + cage_id + ' mice are ' + mice_id_list + ' len ' + mice_ids.length + ' to hide ' + mice_id_list);
+						var table = "<table><tr><td><i>Id</i></td><td><i>Birth (wks ago)</i></td><td><i>Born</i></td><td><i>Survived (&gt;10 days)</i></td></tr>";
+						for (var i=0; i<mice_ids.length; i++) {
+							var litters;
+							if (MOUSE.progeny) {
+								litters = MOUSE.progeny[mice_ids[i]];
+								debug('litter of ' + mice_ids[i] + ' is ' + litters.length);
+			
+								for (var j=0; j<litters.length; j++) {
+									table += '<tr><td>' + mice_ids[i] + '</td><td>' + litters[j][0] + '</td><td>' + litters[j][1] + '</td><td>' + litters[j][2] + '</td></tr>';
+								}
+							}
+	
+						}
+						$('#breeder_stats' + cage_id).html(table);
+
 						return false;
 					});
 					$('.edit_mouse').click(function() {
