@@ -153,7 +153,6 @@
 				if (result.cage) {
 					var cages = result.cage;
 					debug('in cages precage');
-//					blah
 //
 //					/* set up to all quick move */
 					var options = []; var values = []; var option_to_value = [];
@@ -192,6 +191,7 @@
 							var now = new Date();
 							var now_milliseconds = now.getTime();
 							var mice_in_cage = result.mice[cages[i][0]];
+							var breeders = [];
 
 							for (var j=0; j<mice_in_cage.length; j++) {
 								var birth = mice_in_cage[j][10]*1000;
@@ -205,6 +205,8 @@
 									mice_in_cage[j][3] = '-';
 
 								html += '<td>' + mice_in_cage[j][0] + '</td><td><span id="'+row_id + 'sex">' + sex_to_short[mice_in_cage[j][1]] + '</span></td><td>' + mice_in_cage[j][2] + '</td>';
+								if (mice_in_cage[j][6] == "breeder" && mice_in_cage[j][1] == "female")
+									breeders.push(mice_in_cage[j][0]);
 
 								if (age_in_weeks > 30 && mice_in_cage[j][6] == "breeder" && mice_in_cage[j][1] == "female")
 									html += '<td class="highlight" align="center">' + age_in_weeks + '</td>';
@@ -213,7 +215,7 @@
 								else 
 									html += '<td align="center">' + age_in_weeks + '</td>';
 								html += '<td align=center><span id="'+row_id +'wean">' + mice_in_cage[j][3] + '</span></td><td>' + mice_in_cage[j][6] + '</td><td>' + mice_in_cage[j][7] + '</td>';
-								html += '<td align="center">' + mice_in_cage[j][8] + '</td>';
+								html += '<td align="center">' + mice_in_cage[j][9] + '</td>';
 								// cage id is title; mouse id is id
 //								html += '<a id="' + mice_in_cage[j][0]  + '" title=' + cages[i][0] +  ' href="#">edit mouse ' + mice_in_cage[j][0] + '</a>';
 								html += '<td><a class="edit_mouse" id="' + mice_in_cage[j][0]  + '" title=' + cages[i][0] +  ' data-mini="true" href="#" data-role="button">Edit</a></td>';
@@ -254,6 +256,12 @@
 								html += '</tr>';
 							}
 
+							if (breeders.length) {
+								html += '<tr><td colspan=6>'; 
+								html += '<a href="javascript:void(0);"  class="show_breeder_stats" title="' + cage_id + '">Show breeder stats</a><span id="breeder_stats' + cage_id + '"></span>';
+								html += '</td></tr>';
+							}
+
 							if (isolator_id != 0) {
 								
 								html += '<tfoot><tr><td colspan=4><a data-mini="true" class="add_mouse_button" id="' + cage_id  + '" title=' + cages[i][0] +  ' href="#" data-role="button">Add mice to cage ' + cage_num + '</a></td><td>&nbsp;</td></tr></tfoot>';
@@ -291,6 +299,12 @@
 //					html += '<p><b>Isolator administrator:</b> ' + isolator_info[2] +  '</p>';
 						add_isolator($pane, MOUSE, {'isolator_id':isolator_info[0],isolator_description:isolator_info[1],isolator_administrator:isolator_info[2]});
 						debug('editing isolator');
+						return false;
+					});
+					$('.show_breeder_stats').click(function() {
+						var cage_id = this.title;
+						$('#breeder_stats' + cage_id).html("<table><tr><td>HELLO</td></tr><tr><td>world</td></tr></table>");
+						debug('showing stats for breeders in cage ' + cage_id);
 						return false;
 					});
 					$('.edit_mouse').click(function() {

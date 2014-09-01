@@ -526,7 +526,19 @@ function get_cages($db) {
 
 		# mouse referenced by cage id
 #		echo "mouse info for cage id $row[0]";
-		$results['mice'][$row[0]] = get_mouse_info($db, $row[0]);
+		$mouse_info = get_mouse_info($db, $row[0]);
+		$results['mice'][$row[0]] = $mouse_info;
+
+		for ($i=0; $i<count($mouse_info); $i++) {
+			$mi = $mouse_info[$i];
+#			echo "have $mi[0],$mi[6]<BR>";
+			if ($mi[6] == "breeder") {
+				$mouse_id = $mi[0];
+				$results['progeny'][$mouse_id] = get_progeny($mouse_id, $db);
+#				echo "here";
+			}
+		}
+			
 	}
 
 	$result2 = $db->query('SELECT strain_name FROM strain');
@@ -564,6 +576,7 @@ function get_cages($db) {
 	while($row = $result7->fetchArray(SQLITE3_NUM)) {
 		$results['types'][] = $row;
 	}
+
 	
 
 	return $results;
