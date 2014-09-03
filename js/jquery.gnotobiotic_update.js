@@ -215,7 +215,13 @@
 									html += '<td class="highlight" align="center">' + age_in_weeks + '</td>';
 								else 
 									html += '<td align="center">' + age_in_weeks + '</td>';
-								html += '<td align=center><span id="'+row_id +'wean">' + mice_in_cage[j][3] + '</span></td><td>' + mice_in_cage[j][6] + '</td><td>' + mice_in_cage[j][7] + '</td>';
+
+								if (mice_in_cage[j][3] == "-" && age_in_weeks > 3.0)
+									html += '<td align=center class="highlight">';
+								else
+									html += '<td align=center>';
+
+								html += '<span id="'+row_id +'wean">' + mice_in_cage[j][3] + '</span></td><td>' + mice_in_cage[j][6] + '</td><td>' + mice_in_cage[j][7] + '</td>';
 								html += '<td align="center">' + mice_in_cage[j][9] + '</td>';
 								// cage id is title; mouse id is id
 //								html += '<a id="' + mice_in_cage[j][0]  + '" title=' + cages[i][0] +  ' href="#">edit mouse ' + mice_in_cage[j][0] + '</a>';
