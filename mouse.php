@@ -78,6 +78,10 @@ elseif ($_GET['move_mouse']) {
 	$JSON = move_mouse($db);
 	echo json_encode($JSON);
 }
+elseif ($_GET['assign_type_mouse']) {
+	$JSON = assign_type_mouse($db);
+	echo json_encode($JSON);
+}
 elseif ($_GET['show_tables']) {
 	show_tables($db);
 }
@@ -193,6 +197,29 @@ function edit_mouse($db) {
 
 	return $results;
 }
+function assign_type_mouse($db) {
+	$results = array();
+
+	if ($_GET['mouseId']) {
+		$mouse_id=$_GET['mouseId'];
+	}
+	else {
+		$results['error'] = "a mouse id must be provided";
+
+		return $results;
+	}
+	if ($assign_type = $_GET['assign_type']) {
+		$update = "UPDATE mouse set mouse_type='$assign_type' where mouse_id=$mouse_id";
+		$ok = $db->exec($update);
+		if (!$ok) { $results['error'] =  "Error changing mouse cage: " . $db->lastErrorMsg() . "<BR>query: $update<BR>"; return $results;}
+	}
+
+	$results['success'] =  1;
+
+	return $results;
+}
+
+
 
 function move_mouse($db) {
 	$results = array();
@@ -232,7 +259,6 @@ function move_mouse($db) {
 	$results['success'] =  1;
 
 	return $results;
-
 }
 
 function add_mice($db) {

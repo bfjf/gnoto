@@ -150,6 +150,7 @@
 				MOUSE.progeny = result.progeny;
 				MOUSE.quick_move_table = 0;
 				MOUSE.quick_move_cage = 0;
+				MOUSE.quick_type_assign = 0;
 				var cage_note = 'cage_note';
 				if (result.cage) {
 					var cages = result.cage;
@@ -166,10 +167,18 @@
 					}
 //
 //
-					html += write_select('Quick move cage destination', 'quick_table_move', 'quick_table_move', options, 0, 0, values);
+					html += write_select('Quick move', 'quick_table_move', 'quick_table_move', options, 0, 0, values);
 					MOUSE.quick_move_table = options[0];
 //					MOUSE.quick_move_cage = values[0];
 					MOUSE.quick_move_cage = option_to_value[options[0]];
+
+					var type_options = [];
+					for (var i=0; i<MOUSE.types.length; i++) 
+						if (MOUSE.types[i] != "Breeder") // force slow assign to breeders
+							type_options.push(MOUSE.types[i])
+					html += write_select('Quick assign', 'quick_type_assign', 'quick_type_assign', type_options, 0, 0, type_options);
+					MOUSE.quick_type_assign = type_options[0];
+
 					//debug('length is ' + cages.length);
 	
 					var sex_to_short = {undetermined:'?',male:'M',female:'F'};
@@ -221,7 +230,7 @@
 								else
 									html += '<td align=center>';
 
-								html += '<span id="'+row_id +'wean">' + mice_in_cage[j][3] + '</span></td><td>' + mice_in_cage[j][6] + '</td><td>' + mice_in_cage[j][7] + '</td>';
+								html += '<span id="'+row_id +'wean">' + mice_in_cage[j][3] + '</span></td><td><span id="'+ row_id + 'assign_type">'  + mice_in_cage[j][6] + '</span></td><td>' + mice_in_cage[j][7] + '</td>';
 								html += '<td align="center">' + mice_in_cage[j][9] + '</td>';
 								// cage id is title; mouse id is id
 //								html += '<a id="' + mice_in_cage[j][0]  + '" title=' + cages[i][0] +  ' href="#">edit mouse ' + mice_in_cage[j][0] + '</a>';
@@ -235,7 +244,7 @@
 //								if (mice_in_cage[j][1] != "male" && mice_in_cage[j][6] != "breeder")
 								/* only make it easy to cull animals that are NOT breeders */
 								if (mice_in_cage[j][6] != "breeder")
-									quick_buttons += '<a class="cull_mouse" id="' + mice_in_cage[j][0]  + '" title="mouseCull' + mice_in_cage[j][0] + '" data-mini="true" data-icon="delete" href="#" data-inline="true" data-role="button">Cull</a>';
+									quick_buttons += '<a class="cull_mouse" id="' + mice_in_cage[j][0]  + '" title="mouseCull' + mice_in_cage[j][0] + '" data-mini="true" data-icon="delete" href="#" data-inline="true" data-role="button">&nbsp;</a>';
 //								else
 //									html += '<td>&nbsp;</td>';
 
@@ -251,6 +260,8 @@
 								/* set up the quick move */
 
 								quick_buttons += '<a class="quick_move" id="' + mice_in_cage[j][0]  + '" title="' +table_id + '" data-mini="true" href="#" data-inline="true" data-icon="forward" data-role="button"><span class="move_to">' + MOUSE.quick_move_cage + '</span></a>';
+
+								quick_buttons += '<a class="quick_type_assign" id="' + mice_in_cage[j][0]  + '" title="' +table_id + '" data-mini="true" href="#" data-inline="true" data-icon="action" data-role="button"><span class="assign_type">' + MOUSE.quick_type_assign + '</span></a>';
 //								else debug(mice_in_cage[j][0] + ' weaned ' + mice_in_cage[j][3]);
 
 								if (quick_buttons.length)
@@ -398,6 +409,18 @@
 						});
 						return false;
 					});
+					$('.quick_type_assign').click(function() {
+						var mouse_id = this.id;
+						var assign_type = MOUSE.quick_type_assign;
+						debug('assigning ' + mouse_id + ' to ' + assign_type);
+						var url_type_assign = MOUSE.url + "?assign_type_mouse=1" + "&mouseId=" + mouse_id + "&assign_type=" + assign_type;
+						$.getJSON(url_type_assign, function(results) { // update the database then update the interface
+							$('#mouseRow' + mouse_id + 'assign_type').text(assign_type);
+						});
+
+						return false;
+//								quick_buttons += '<a class="quick_type_assign" id="' + mice_in_cage[j][0]  + '" title="' +table_id + '" data-mini="true" href="#" data-inline="true" data-icon="action" data-role="button"><span class="assign_type">' + MOUSE.quick_type_assign + '</span></a>';
+					});
 					$('.quick_move').click(function() {
 						var mouse_id = this.id;
 						var table_id = this.title;
@@ -441,6 +464,12 @@
 //						debug('selected ' + table_selected + 'cage: ' + cage_selected);
 						$('.move_to').text(cage_text);
 					});
+					$('#quick_type_assign').change(function(e,passed) {
+						var assign_type = $('#quick_type_assign').val();
+						MOUSE.quick_type_assign = assign_type;
+						$('.assign_type').text(assign_type);
+					});
+
 				}
 				else {
 					html +=	'This isolator has no cages.';
