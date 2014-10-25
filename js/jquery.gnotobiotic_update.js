@@ -231,7 +231,7 @@
 									html += '<td align=center>';
 
 								html += '<span id="'+row_id +'wean">' + mice_in_cage[j][3] + '</span></td><td><span id="'+ row_id + 'assign_type">'  + mice_in_cage[j][6] + '</span></td><td>' + mice_in_cage[j][7] + '</td>';
-								html += '<td align="center">' + mice_in_cage[j][9] + '</td>';
+								html += '<td align="center">' + mice_in_cage[j][8] + '</td>';
 								// cage id is title; mouse id is id
 //								html += '<a id="' + mice_in_cage[j][0]  + '" title=' + cages[i][0] +  ' href="#">edit mouse ' + mice_in_cage[j][0] + '</a>';
 								html += '<td><a class="edit_mouse" id="' + mice_in_cage[j][0]  + '" title=' + cages[i][0] +  ' data-mini="true" href="#" data-role="button">Edit</a></td>';
