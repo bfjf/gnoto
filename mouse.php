@@ -719,7 +719,9 @@ function get_mouse_info($db, $cage_id) {
 function get_breeder_stats($db) {
 	$results = array();
 #	$result = $db->query("select mouse_id, c.cage_id, c.isolator_id, m.birth_date, m.strain, m.genotype from mouse m, cage c where m.mouse_type='breeder' AND m.death_date=0 AND m.sex='female' AND m.cage_id=c.cage_id ORDER BY m.birth_date");
-	$result = $db->query("select mouse_id, c.cage_id, c.isolator_id, m.birth_date, m.strain, m.genotype from mouse m, cage c where m.mouse_type='breeder' AND m.death_date=0 AND m.sex='female' AND m.cage_id=c.cage_id ORDER BY c.isolator_id, m.birth_date");
+#	$result = $db->query("SELECT mouse_id FROM mouse WHERE cage_id=$cageId AND mouse_type COLLATE nocase ='breeder'");
+#	$result = $db->query("select mouse_id, c.cage_id, c.isolator_id, m.birth_date, m.strain, m.genotype from mouse m, cage c where m.mouse_type ='breeder' AND m.death_date=0 AND m.sex='female' AND m.cage_id=c.cage_id ORDER BY c.isolator_id, m.birth_date");
+	$result = $db->query("select mouse_id, c.cage_id, c.isolator_id, m.birth_date, m.strain, m.genotype from mouse m, cage c where m.mouse_type COLLATE nocase ='breeder' AND m.death_date=0 AND m.sex='female' AND m.cage_id=c.cage_id ORDER BY c.isolator_id, m.birth_date");
 
 	$now = time();
 	while($row = $result->fetchArray(SQLITE3_NUM)) {
