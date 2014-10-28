@@ -414,8 +414,10 @@
 						var assign_type = MOUSE.quick_type_assign;
 						debug('assigning ' + mouse_id + ' to ' + assign_type);
 						var url_type_assign = MOUSE.url + "?assign_type_mouse=1" + "&mouseId=" + mouse_id + "&assign_type=" + assign_type;
-						$.getJSON(url_type_assign, function(results) { // update the database then update the interface
-							$('#mouseRow' + mouse_id + 'assign_type').text(assign_type);
+						$.getJSON(url_type_assign, function(res2) { // update the database then update the interface
+							if (res2.success) {
+								$('#mouseRow' + mouse_id + 'assign_type').text(assign_type);
+							}
 						});
 
 						return false;
