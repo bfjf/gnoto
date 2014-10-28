@@ -367,7 +367,7 @@ function get_mouse($db) {
 function get_parents($db, $cageId) {
 	$parents = array();
 	# we assume that all of the breeders in the new mouse's cage are its parents
-	$result = $db->query("SELECT mouse_id FROM mouse WHERE cage_id=$cageId AND mouse_type='breeder'");
+	$result = $db->query("SELECT mouse_id FROM mouse WHERE cage_id=$cageId AND mouse_type COLLATE nocase ='breeder'");
 	while($row = $result->fetchArray(SQLITE3_NUM)) {
 #		echo "have parent $row[0] in cage $cageId";
 		$parents[] = $row[0];
@@ -740,6 +740,7 @@ function get_progeny($mouse_id, $db) {
 	$now = time();
 	$time_window = 14; # need to be at least 2 weeks old
 #	$min_date = $now - (60*60*24*$time_window);
+	#echo "doing $mouse_id<BR>";
 		
 	$born_at_date = array();
 	$survived_at_date = array();
@@ -750,7 +751,7 @@ function get_progeny($mouse_id, $db) {
 		$weeks_ago = round($days_ago/7, 1);
 		if ($row[2] < 0) { # not dead yet
 			$days_survived = $days_ago;
-#			echo "$row[0] alive ($days_survived): $mouse_id ago: $weeks_ago<br>";
+			#echo "$row[0] alive ($days_survived): $mouse_id ago: $weeks_ago<br>";
 			$born_at_date[$weeks_ago]++;
 			if ($days_survived > $min_survival) {
 				$survived_at_date[$weeks_ago]++;
@@ -804,7 +805,7 @@ function get_summary_stats($db) {
 #		echo $name  . "<BR>";
 		$strain_level[$name]['current_mice']++;
 
-		if ($row[5] == "breeder") {
+		if (strtolower($row[5]) == "breeder") {
 			$num_breeders++;
 			$strain_level[$name]['breeders']++;
 		}
