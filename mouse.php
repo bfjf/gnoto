@@ -558,7 +558,7 @@ function get_cages($db) {
 		for ($i=0; $i<count($mouse_info); $i++) {
 			$mi = $mouse_info[$i];
 #			echo "have $mi[0],$mi[6]<BR>";
-			if ($mi[6] == "breeder") {
+			if (strtolower($mi[6]) == "breeder") { # case insensitive match
 				$mouse_id = $mi[0];
 				$results['progeny'][$mouse_id] = get_progeny($mouse_id, $db);
 #				echo "here";

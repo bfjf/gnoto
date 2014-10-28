@@ -215,12 +215,12 @@
 									mice_in_cage[j][3] = '-';
 
 								html += '<td>' + mice_in_cage[j][0] + '</td><td><span id="'+row_id + 'sex">' + sex_to_short[mice_in_cage[j][1]] + '</span></td><td>' + mice_in_cage[j][2] + '</td>';
-								if (mice_in_cage[j][6] == "breeder" && mice_in_cage[j][1] == "female")
+								if (mice_in_cage[j][6].toLowerCase() == "breeder" && mice_in_cage[j][1] == "female")
 									breeders.push(mice_in_cage[j][0]);
 
-								if (age_in_weeks > 30 && mice_in_cage[j][6] == "breeder" && mice_in_cage[j][1] == "female")
+								if (age_in_weeks > 30 && mice_in_cage[j][6].toLowerCase() == "breeder" && mice_in_cage[j][1] == "female")
 									html += '<td class="highlight" align="center">' + age_in_weeks + '</td>';
-								else if (age_in_weeks > 60 && mice_in_cage[j][6] == "breeder" && mice_in_cage[j][1] == "male")
+								else if (age_in_weeks > 60 && mice_in_cage[j][6].toLowerCase() == "breeder" && mice_in_cage[j][1] == "male")
 									html += '<td class="highlight" align="center">' + age_in_weeks + '</td>';
 								else 
 									html += '<td align="center">' + age_in_weeks + '</td>';
@@ -243,7 +243,7 @@
 								/* only make it easy to cull females that are NOT breeders; all males should be hard to cull */
 //								if (mice_in_cage[j][1] != "male" && mice_in_cage[j][6] != "breeder")
 								/* only make it easy to cull animals that are NOT breeders */
-								if (mice_in_cage[j][6] != "breeder")
+								if (mice_in_cage[j][6].toLowerCase() != "breeder")
 									quick_buttons += '<a class="cull_mouse" id="' + mice_in_cage[j][0]  + '" title="mouseCull' + mice_in_cage[j][0] + '" data-mini="true" data-icon="delete" href="#" data-inline="true" data-role="button">&nbsp;</a>';
 //								else
 //									html += '<td>&nbsp;</td>';
@@ -853,7 +853,7 @@
 		}
 		function get_default_strain(mice_in_cage, list) {
 			for (var i=0; i<mice_in_cage.length; i++) {
-				if (mice_in_cage[i][6] == "breeder") {
+				if (mice_in_cage[i][6].toLowerCase() == "breeder") { // case insensitive
 					var strain = mice_in_cage[i][7];
 					for (var j=0; j<list.length; j++) {
 						if (list[j] == strain)
@@ -867,7 +867,7 @@
 		function get_default_genotype(mice_in_cage, list) {
 			var breeder_genotypes = [];
 			for (var i=0; i<mice_in_cage.length; i++) {
-				if (mice_in_cage[i][6] == "breeder") {
+				if (mice_in_cage[i][6].toLowerCase() == "breeder") { // case insensitive
 					var genotype = mice_in_cage[i][8];
 					breeder_genotypes[genotype]=1;
 				}
