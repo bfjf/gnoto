@@ -167,7 +167,9 @@
 					}
 //
 //
-					html += write_select('Quick move', 'quick_table_move', 'quick_table_move', options, 0, 0, values);
+//					html += write_select('Quick move', 'quick_table_move', 'quick_table_move', options, 0, 0, values);
+					html += write_quick_cage_dialog(isolator_info[0], options[0], MOUSE.cages, option_to_value);
+					//html += write_cage_dialog(options[0],MOUSE.cages);
 					MOUSE.quick_move_table = options[0];
 //					MOUSE.quick_move_cage = values[0];
 					MOUSE.quick_move_cage = option_to_value[options[0]];
@@ -430,11 +432,14 @@
 						var destination_table = 'cage' + MOUSE.quick_move_table;
 //						MOUSE.quick_move_table = table_selected;
 //						MOUSE.quick_move_cage = cage_selected;
+						debug('in quick move');
 						// FIRST CHECK IF IN SAME TABLE
 						if (table_id == MOUSE.quick_move_table)
 							return false; // don't move into same table
 						
 						var url_cull = MOUSE.url + "?move_mouse=1" + "&mouseId=" + mouse_id + "&cage_select=" + MOUSE.quick_move_table;
+						debug('here URL' + url_cull);
+						debug('mouseRow: ' + row_id + '  dest table:' +destination_table);
 						$.getJSON(url_cull, function(res2) {
 							if (res2.success) {
 								// detach the row from the DOM
@@ -463,7 +468,7 @@
 						MOUSE.quick_move_cage = cage_selected;
 						//var cage_text = 'cage ' + cage_selected;
 						var cage_text =  cage_selected;
-//						debug('selected ' + table_selected + 'cage: ' + cage_selected);
+						debug('QUICK_TBL selected ' + table_selected + 'cage: ' + cage_selected);
 						$('.move_to').text(cage_text);
 					});
 					$('#quick_type_assign').change(function(e,passed) {
@@ -745,6 +750,60 @@
 
 			html += '</select></div>';
 			return html;
+		}
+		function write_quick_cage_dialog(selected_isolator, selected_cage, cages, option_to_value) {
+			var html = '<div data-role="fieldcontain">'+
+				'<label for="select-choice-1" class="select">Quick move:</label>' +
+				'<select name="quick_table_move" id="quick_table_move">';
+		//function write_select(label, name, id, options, selected, show_blank, values) {
+		//	var html = '<div data-role="fieldcontain">'+
+//				'<label for="select-choice-1" class="select">' + label + ':</label>' +
+//				'<select name="' + name + '" id="' + id + '">';
+
+//			html += write_select('Quick move', 'quick_table_move', 'quick_table_move', options, 0, 0, values);
+	//		html += write_quick_cage_dialog(options[0],MOUSE.cages);
+			var current_isolator = -1;
+
+			var prev_isolator = -1;
+			var cage_num_offset = 0;
+
+			if (cages && cages.length) {
+				for (var i=0; i<cages.length; i++) {
+					var option = cages[i];
+	
+					var isolator_id = option[1];
+					var cage_id = option[0];
+
+					if (prev_isolator != isolator_id) 
+						cage_num_offset = i, prev_isolator = isolator_id;
+
+					
+					if (isolator_id != current_isolator) {
+						html += '<optgroup label="Isolator'+isolator_id  + '">';
+						current_isolator = isolator_id;
+					}
+				
+	
+					var cage_num = i+1 - cage_num_offset;
+					var prefix = "";
+					if (current_isolator != selected_isolator) {
+						prefix = "ISO" + current_isolator + ' ';
+						option_to_value[cage_id] = "ISO"+current_isolator+":"+cage_num;
+					}
+
+					if (cage_id == selected_cage)
+						html += '<option value="' + cage_id + '" selected>' + prefix + 'cage ' + cage_num + '</option>';
+//						html += '<option value="' + cage_id + '" selected>Cage ' + cage_id + '</option>';
+					else
+						html += '<option value="' + cage_id + '">' + prefix + 'cage ' + cage_num + '</option>';
+//						html += '<option value="' + cage_id + '">Cage ' + cage_id + '</option>';
+				}
+			}
+			html += '</select></div>';
+
+			return html;
+
+
 		}
 		function write_cage_dialog(selected_cage,cages) {
 			var html = '<div data-role="fieldcontain">'+
