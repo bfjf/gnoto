@@ -175,9 +175,10 @@
 					MOUSE.quick_move_cage = option_to_value[options[0]];
 
 					var type_options = [];
-					for (var i=0; i<MOUSE.types.length; i++) 
-						if (MOUSE.types[i] != "Breeder") // force slow assign to breeders
+					for (var i=0; i<MOUSE.types.length; i++) {
+//						if (MOUSE.types[i] != "Breeder") // force slow assign to breeders
 							type_options.push(MOUSE.types[i])
+					}
 					html += write_select('Quick assign', 'quick_type_assign', 'quick_type_assign', type_options, 0, 0, type_options);
 					MOUSE.quick_type_assign = type_options[0];
 
@@ -468,7 +469,7 @@
 						MOUSE.quick_move_cage = cage_selected;
 						//var cage_text = 'cage ' + cage_selected;
 						var cage_text =  cage_selected;
-						debug('QUICK_TBL selected ' + table_selected + 'cage: ' + cage_selected);
+						debug('QUICK_TBL selected ' + table_selected + ', cage: ' + cage_selected);
 						$('.move_to').text(cage_text);
 					});
 					$('#quick_type_assign').change(function(e,passed) {
