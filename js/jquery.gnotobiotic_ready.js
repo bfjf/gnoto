@@ -48,6 +48,7 @@
 				var sexes_allowed = {male:0,female:0,undetermined:0};
 				var strains_allowed = {};
 				var genotypes_allowed = {};
+				var cage_id_to_cage_num = result.cage_id_to_cage_num;
 				html += '<h2>Mice ready for experimentation</h2>';
 		        	html += '<div data-role="fieldcontain">' + 
 					'<label for="slider">Target age in weeks: </label>' + 
@@ -91,7 +92,7 @@
 
 				$pane.html(html).trigger('create');
 
-				create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed);
+				create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed, cage_id_to_cage_num);
 
 				$('#strains').change(function() {
 					var s = $('#strains').val();	
@@ -99,7 +100,7 @@
 //						debug('have strain ' + i + ' ' + s[i]);
 						strains_allowed[s[i]]=1;
 					}
-					create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed);
+					create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed, cage_id_to_cage_num);
 				});
 				$('#genotypes').change(function() {
 					var g = $('#genotypes').val();	
@@ -109,7 +110,7 @@
 							genotypes_allowed[g[i]]=1;
 						}
 					}
-					create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed);
+					create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed, cage_id_to_cage_num);
 				});
 				$('#sex_male').change(function() {
 					if ( $('#sex_male:checked').val())
@@ -118,7 +119,7 @@
 						sexes_allowed.male=0;
 
 					//debug('male now ' + sexes_allowed.male);
-					create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed);
+					create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed, cage_id_to_cage_num);
 				});
 				$('#sex_female').change(function() {
 					if ( $('#sex_female:checked').val())
@@ -126,7 +127,7 @@
 					else
 						sexes_allowed.female=0;
 
-					create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed);
+					create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed, cage_id_to_cage_num);
 				});
 				$('#sex_undetermined').change(function() {
 					if ( $('#sex_undetermined:checked').val())
@@ -134,18 +135,18 @@
 					else
 						sexes_allowed.undetermined=0;
 
-					create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed);
+					create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed, cage_id_to_cage_num);
 				});
 
                                 $('#age_in_weeks').change(function(e,passed) {
                                         default_age = $('#age_in_weeks').val();
 
-					create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed);
+					create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed, cage_id_to_cage_num);
                                 });
                                 $('#weeks_to_show').change(function(e,passed) {
                                         weeks_to_show = $('#weeks_to_show').val();
 
-					create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed);
+					create_mice_available_table(mice, $('#mice_available'), weeks_to_show, default_age, sexes_allowed, strains_allowed, genotypes_allowed, cage_id_to_cage_num);
                                 });
 				if (MOUSE.callback) {
 					MOUSE.callback();
@@ -154,7 +155,7 @@
 			});
 //			$pane.html('to do page').trigger('create');
 		}
-		function create_mice_available_table(mice, $pane, weeks_to_show, target_age, sexes_allowed, strains_allowed, genotypes_allowed) {
+		function create_mice_available_table(mice, $pane, weeks_to_show, target_age, sexes_allowed, strains_allowed, genotypes_allowed, cage_id_to_cage_num) {
 			var weeks = target_age;
 			var target_weeks_in_milliseconds = weeks * 7 * 24 * 60* 60 *1000;
                         var now = new Date();
@@ -165,6 +166,8 @@
 			var key_sort = {};
 			var unique_row_count = 0;
 			var mice_fitting_criteria = 0;
+
+			debug('hello');
 			for (var i=0; i<mice.length; i++) {
 				var birth = mice[i][2]*1000;
                                 var birth_date = new Date(birth);
@@ -188,21 +191,25 @@
                                 var target_date = new Date(target);
 				var targetm = target_date.getMonth()+1;
                                	var target_format = target_date.getFullYear() + '-' + targetm + '-' + target_date.getDate();
+				var target_wks_from_now = (target - now_milliseconds)/1000/60/60/24/7;
+				target_wks_from_now = target_wks_from_now.toFixed(1);
 				var target_days_from_now = (target - now_milliseconds)/1000/60/60/24;
 				target_days_from_now = target_days_from_now.toFixed(1);
 
 				if (target_days_from_now/7 < weeks_to_show && sexes_allowed[mice[i][1]] && strains_allowed[mice[i][4]] && genotypes_allowed[mice[i][5]]) {
 //				html += '<tr>';
+
 					var text = '</td><td>' + sex_to_abbrev[mice[i][1]] + '</td><td>' + age_in_weeks + '</td><td>' + target_format + '</td>';
 
 
                                         if (target_days_from_now < 0)
-						text += '<td class="highlight">'+target_days_from_now;
+						text += '<td class="highlight">'+target_wks_from_now;
 					else
-						text += '<td>'+target_days_from_now;
+						text += '<td>'+target_wks_from_now;
 
-					text +=  '</td><td>' + birth_format + 
-						'</td><td>' + mice[i][4] + '</td><td>' + mice[i][5] + '</td><td>' + mice[i][6] + '</td><td>' + mice[i][7] + '</td>';
+//					text +=  '</td><td>' //+ birth_format + 
+					text +=	'</td><td>' + mice[i][4] + '</td><td>' + mice[i][5] + '</td><td>' + cage_id_to_cage_num[mice[i][6]] + '</td><td>' + mice[i][7] + '</td>';
+//						'</td><td>' + mice[i][4] + '</td><td>' + mice[i][5] + '</td><td>' + 'hello how are you' + '</td><td>' + mice[i][7] + '</td>';
 //						'</td><td align="center">' + wean_format + '</td><td>' + mice[i][4] + '</td><td>' + mice[i][5] + '</td><td>' + mice[i][6] + '</td><td>' + mice[i][7] + '</td>';
 	
 					if (!unique_sets[text]) {
@@ -224,7 +231,7 @@
 				var html = '<h2>' + mice_fitting_criteria + ' mice passing current criteria</h2>';
 				html += '<table>';
 //				html += '<tr><th>NumMice</th><th>MouseIds</th><th>Sex</th><th>Age (wks)</th><th>TargetDate</th><th>DaysToTarget</th><th>BirthDate</th><th>WeanDate</th><th>Strain</th><th>Genotype</th><th>CageId</th><th>IsolatorId</th></tr>';
-				html += '<tr><th>NumMice</th><th>MouseIds</th><th>Sex</th><th>Age (wks)</th><th>TargetDate</th><th>DaysToTarget</th><th>BirthDate</th><th>Strain</th><th>Genotype</th><th>CageId</th><th>IsolatorId</th></tr>';
+				html += '<tr><th>NumMice</th><th>MouseIds</th><th>Sex</th><th>Age (wks)</th><th>TargetDate</th><th>WeeksToTarget</th><th>Strain</th><th>Genotype</th><th>CageId</th><th>IsolatorId</th></tr>';
 				for (var i=0; i<sorted_sets.length; i++) {
 					var set = sorted_sets[i];
 					var mouse_ids = unique_sets[set].join(',');

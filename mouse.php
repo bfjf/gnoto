@@ -1,7 +1,8 @@
 <?php
 error_reporting(E_ERROR | E_PARSE);
 
-$SITE_ROOT = "http://gnoto.mssm.edu/";
+#$SITE_ROOT = "http://gnoto.mssm.edu/";
+$SITE_ROOT = "http://localhost/gnoto/gnoto/";
 
 # connect to the database
 $db_name = "mouse.db";
@@ -848,9 +849,24 @@ function get_just_born($db) {
 function get_available_mice($db) {
 	$results = array();
 
-	$result = $db->query("SELECT m.mouse_id, sex, birth_date, wean_date, strain, genotype, m.cage_id, c.isolator_id FROM mouse m, cage c where m.cage_id=c.cage_id AND m.death_date=0 AND (m.mouse_type='experimental' OR m.mouse_type='unassigned')");
+#	$result = $db->query("SELECT m.mouse_id, sex, birth_date, wean_date, strain, genotype, m.cage_id, c.isolator_id FROM mouse m, cage c where m.cage_id=c.cage_id AND m.death_date=0 AND (m.mouse_type='experimental' OR m.mouse_type='unassigned')");
+	$result = $db->query("SELECT m.mouse_id, sex, birth_date, wean_date, strain, genotype, m.cage_id, c.isolator_id FROM mouse m, cage c where m.cage_id=c.cage_id AND m.death_date=0 AND m.mouse_type='NA'");
 	while($row = $result->fetchArray(SQLITE3_NUM)) {
 		$results['mice'][] = $row;
+	}
+
+	$resultCage = $db->query("Select cage_id, isolator_id from cage ORDER BY isolator_id, cage_id");
+	$cage_num = 0;
+	$prev = -1;
+	while($row = $resultCage->fetchArray(SQLITE3_NUM)) {
+		if ($row[1] != $prev) {
+			$cage_num=0;
+		}
+		$cage_num++;
+		$prev = $row[1];	
+		
+		$results['cage_id_to_cage_num'][$row[0]] = $cage_num;
+
 	}
 
 	$result2 = $db->query('SELECT strain_name FROM strain');
