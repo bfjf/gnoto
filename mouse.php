@@ -850,7 +850,7 @@ function get_available_mice($db) {
 	$results = array();
 
 #	$result = $db->query("SELECT m.mouse_id, sex, birth_date, wean_date, strain, genotype, m.cage_id, c.isolator_id FROM mouse m, cage c where m.cage_id=c.cage_id AND m.death_date=0 AND (m.mouse_type='experimental' OR m.mouse_type='unassigned')");
-	$result = $db->query("SELECT m.mouse_id, sex, birth_date, wean_date, strain, genotype, m.cage_id, c.isolator_id FROM mouse m, cage c where m.cage_id=c.cage_id AND m.death_date=0 AND m.mouse_type='NA'");
+	$result = $db->query("SELECT m.mouse_id, sex, birth_date, wean_date, strain, genotype, m.cage_id, c.isolator_id FROM mouse m, cage c where m.cage_id=c.cage_id AND m.death_date=0 AND m.mouse_type='NA' ORDER BY birth_date");
 	while($row = $result->fetchArray(SQLITE3_NUM)) {
 		$results['mice'][] = $row;
 	}
