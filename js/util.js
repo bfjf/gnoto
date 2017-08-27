@@ -24,4 +24,34 @@ function sort_keys(associative_array, use_numeric) {
 	return keys;
 }
 
+function write_select(label, name, id, options, selected, show_blank, values) {
+	var html = '<div data-role="fieldcontain">'+
+		'<label for="select-choice-1" class="select">' + label + ':</label>' +
+		'<select name="' + name + '" id="' + id + '">';
+
+
+	if (show_blank) {
+		if (selected < 0)
+			html += '<option value="0" selected></option>';
+		else
+			html += '<option value="0"></option>';
+	}
+
+	for (var i=0; i<options.length; i++) {
+		var option = options[i];
+		var value = option;
+		if (values)
+			value = values[i];
+			if (i == selected)
+				html += '<option value="' + option + '" selected>' + value + '</option>';
+			else
+				html += '<option value="' + option + '">' + value + '</option>';
+	}
+
+	html += '</select></div>';
+	return html;
+}
+
+
+
 var MyAppRouter;
