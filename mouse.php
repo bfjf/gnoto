@@ -2,7 +2,7 @@
 error_reporting(E_ERROR | E_PARSE);
 
 #$SITE_ROOT = "http://gnoto.mssm.edu/";
-$SITE_ROOT = "http://localhost/gnoto/gnoto/";
+$SITE_ROOT = "http://localhost/dev/gnoto/";
 
 # connect to the database
 $db_name = "mouse.db";
@@ -850,7 +850,7 @@ function get_available_mice($db) {
 	$results = array();
 
 #	$result = $db->query("SELECT m.mouse_id, sex, birth_date, wean_date, strain, genotype, m.cage_id, c.isolator_id FROM mouse m, cage c where m.cage_id=c.cage_id AND m.death_date=0 AND (m.mouse_type='experimental' OR m.mouse_type='unassigned')");
-	$result = $db->query("SELECT m.mouse_id, sex, birth_date, wean_date, strain, genotype, m.cage_id, c.isolator_id FROM mouse m, cage c where m.cage_id=c.cage_id AND m.death_date=0 AND m.mouse_type='NA' ORDER BY birth_date");
+	$result = $db->query("SELECT m.mouse_id, sex, birth_date, wean_date, strain, genotype, m.cage_id, c.isolator_id, m.mouse_type FROM mouse m, cage c where m.cage_id=c.cage_id AND m.death_date=0 AND m.mouse_type='NA' ORDER BY birth_date, c.isolator_id, m.cage_id");
 	while($row = $result->fetchArray(SQLITE3_NUM)) {
 		$results['mice'][] = $row;
 	}
@@ -876,6 +876,13 @@ function get_available_mice($db) {
 	$result3 = $db->query('SELECT genotype_name FROM genotype');
 	while($row = $result3->fetchArray(SQLITE3_NUM)) {
 		$results['genotypes'][] = $row;
+	}
+
+	$results['types'][] = "Breeder";
+	$results['types'][] = "NA";
+	$result7 = $db->query('SELECT assign FROM assignable');
+	while($row = $result7->fetchArray(SQLITE3_NUM)) {
+		$results['types'][] = $row;
 	}
 
 	return $results;

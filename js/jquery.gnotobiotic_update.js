@@ -845,6 +845,7 @@
 
 			return html;
 		}
+		/*
 		function write_select(label, name, id, options, selected, show_blank, values) {
 			var html = '<div data-role="fieldcontain">'+
 				'<label for="select-choice-1" class="select">' + label + ':</label>' +
@@ -872,6 +873,7 @@
 
 			return html;
 		}
+		*/
 
 		function write_radio(name, legend, id_value_pairs) {
 			var html = '';
