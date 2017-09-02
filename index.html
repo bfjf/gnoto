@@ -12,7 +12,7 @@
 
 <!--    <link href="css/mobiscroll-2.0.full.min.css" rel="stylesheet" type="text/css" />-->
 	<link href="css/mobiscroll.datetime-2.4.1.min.css" rel="stylesheet" type="text/css" />-->
-    <link rel="stylesheet" type="text/css" href="css/jquery.jqplot.min.css" />
+<!--    <link rel="stylesheet" type="text/css" href="css/jquery.jqplot.min.css" />-->
 <!--<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>-->
 <!--<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>-->
 <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
@@ -34,8 +34,8 @@
 
 <!--        <script src="js/jquery.gnotobiotic.js"></script>-->
         <script src="lib/mobiscroll.datetime-2.4.1.min.js"></script>
-	<script language="javascript" type="text/javascript" src="lib/jquery.jqplot.min.js"></script>
-	<script language="javascript" type="text/javascript" src="lib/jqplot.dateAxisRenderer.min.js"></script>
+<!--	<script language="javascript" type="text/javascript" src="lib/jquery.jqplot.min.js"></script>-->
+<!--	<script language="javascript" type="text/javascript" src="lib/jqplot.dateAxisRenderer.min.js"></script>-->
 
 
 <!--        <script src="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.js"></script>-->
@@ -45,6 +45,11 @@
 <style>
   .ui-page { background: gray;}
 </style>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+  google.charts.load('current', {packages: ['corechart']});
+  //  google.charts.load('current', {'packages':['line']});
+</script>
 <script>
 
 	/* there is some weird timing stuff so that this event fires before the "ready" jquery event 
