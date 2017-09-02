@@ -164,7 +164,7 @@
 				html += '<div id="plot_pane" style="height:300px;"></div>';
 				$pane.html(html).trigger('create');
 
-				add_isolator_productivity('plot_pane', results.productivity);
+				add_productivity('plot_pane', results.productivity);
 
 
 			});
@@ -174,38 +174,47 @@
 
 		}
 
-		function add_isolator_productivity(pane_id, date_births) {
+		function add_productivity(pane_id, date_births) {
 			var date_plot = [];
+                        var date_plot = [];
 
-			if (! date_births || date_births.length < 1) {
-				debug('skipping stats');
-				$('#' + pane_id).hide();
-				return;
-			}
-			else  {
-				debug('plotting isolator');
-				$('#' + pane_id).show();
-			}
+                        if (! date_births || date_births.length < 1) {
+                                debug('skipping isolator');
+                                $('#' + pane_id).hide();
+                                return;
+                        }
+                        else  {
+                                debug('plotting isolator');
+                                $('#' + pane_id).show();
+                        }
 
-			for (var i=0; i<date_births.length; i++) {
-				date_plot[i] = [date_births[i][0]*1000, date_births[i][1]];
-			}
-			$.jqplot(pane_id, [date_plot], {
-				title:'Productivity (each point = 3 weeks)',
-				axesDefaults: {
-					labelRenderer: $.jqplot.CanvasAxisLabelRenderer
-				},
-				axes:{
-					yaxis:{
-						label:'mice'
-					},
-					xaxis:{
-						renderer:$.jqplot.DateAxisRenderer,
-						tickOptions:{formatString:'%x'}
-					}
-				       },
-					series:[{showLine:false}]
-			});
+
+                        // make plot of mice produced over time
+                        var chart_data = new google.visualization.DataTable();
+                        chart_data.addColumn('date', 'Month');
+                        chart_data.addColumn('number', "Mice born in 3 weeks");
+                        chart_data.addColumn('number', "moving avg");
+
+                        for (var i=0; i<date_births.length; i++) {
+                                var D = date_from_sqlite_date(date_births[i][0]);
+                                chart_data.addRow([D, date_births[i][1], date_births[i][2]]);
+
+                        }
+                        google.charts.setOnLoadCallback(archive_line_plot_draw);
+                        function archive_line_plot_draw () {
+                                var options = {
+                                        title: 'mice born every three weeks',
+                                        legend: { position: 'none' },
+                                        series: {
+                                                0: { lineWidth: 0, pointSize: 3 },
+                                                1: { lineWidth: 2, pointSize: 0 }
+                                        }
+                                };
+                                var chart = new google.visualization.ScatterChart(document.getElementById(pane_id));
+                                chart.draw(chart_data, options);
+                        }
+
+
 		}
 
 		function init_genotypes($pane, MOUSE) {

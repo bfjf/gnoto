@@ -543,12 +543,11 @@
 			var chart_data = new google.visualization.DataTable();
 			chart_data.addColumn('date', 'Month');
 			chart_data.addColumn('number', "Mice born in 3 weeks");
-
-
+			chart_data.addColumn('number', "moving avg");
 
 			for (var i=0; i<date_births.length; i++) {
 				var D = date_from_sqlite_date(date_births[i][0]);
-				chart_data.addRow([D, date_births[i][1]]);
+				chart_data.addRow([D, date_births[i][1], date_births[i][2]]);
 
 			}
 			google.charts.setOnLoadCallback(archive_line_plot_draw);
@@ -556,32 +555,14 @@
 				var options = {
 					title: 'mice born every three weeks',
 					legend: { position: 'none' },
+					series: {
+						0: { lineWidth: 0, pointSize: 3 },
+						1: { lineWidth: 2, pointSize: 0 }
+					}
 				};
 				var chart = new google.visualization.ScatterChart(document.getElementById(pane_id));
 				chart.draw(chart_data, options);
 			}
-
-/*
-                                      $.jqplot(pane_id, [date_plot], {
-                                            title:'Isolator Productivity (each point = 3 weeks)', 
-                                       //     gridPadding:{right:35},
-					   axesDefaults: {
-					        labelRenderer: $.jqplot.CanvasAxisLabelRenderer
-					      },
-                                            axes:{
-                                              yaxis:{
-							label:'mice'
-						},
-                                              xaxis:{
-                                               renderer:$.jqplot.DateAxisRenderer, 
-                                                tickOptions:{formatString:'%x'}
-                                              }
-                                            },
-                                            series:[{showLine:false}]
-                                        });
-
-*/
-			
 
 		}
 		function edit_mouse($pane, MOUSE, cage_id, isolator_id, mouse_id, everything_editable) {

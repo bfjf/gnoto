@@ -613,10 +613,11 @@ function get_productivity($db) {
 	$query = "select (death_date-birth_date)/60/60/24/7, birth_date, death_date from mouse m, cage c where c.cage_id=m.cage_id ORDER BY birth_date";
 	$result1 = $db->query($query);
 
-	$query = "select (m.death_date-m.birth_date)/60/60/24/7, m.birth_date, m.death_date, m.mouse_id, m2.mouse_id, m.cage_id, m2.cage_id from mouse m, mouse m2, mouse_to_parent mtp, cage c2, cage c1 WHERE m.mouse_id=mtp.mouse_id AND mtp.parent_id=m2.mouse_id AND m2.cage_id=c2.cage_id AND m.cage_id=c1.cage_id AND c1.isolator_id=0";
-	$result2 = $db->query($query);
+	#$query = "select (m.death_date-m.birth_date)/60/60/24/7, m.birth_date, m.death_date, m.mouse_id, m2.mouse_id, m.cage_id, m2.cage_id from mouse m, mouse m2, mouse_to_parent mtp, cage c2, cage c1 WHERE m.mouse_id=mtp.mouse_id AND mtp.parent_id=m2.mouse_id AND m2.cage_id=c2.cage_id AND m.cage_id=c1.cage_id AND c1.isolator_id=0";
+	#$result2 = $db->query($query);
 
-	$results = calculate_productivity($result1, $result2);
+	#$results = calculate_productivity($result1, $result2);
+	$results = calculate_productivityB($result1);
 
 	return $results;
 }
@@ -683,6 +684,13 @@ function calculate_productivityB($result1) {
 	foreach ($temp_result as $time => $num) {
 		$results[] = array($time,$num);
 	}
+
+
+	# add moving average
+	for ($i=3; $i<count($results); $i++) {
+		$results[$i][2] = ($results[$i-3][1]+$results[$i-2][1]+$results[$i-1][1] + $results[$i][1])/4;
+	}
+
 
 	return $results;
 }
