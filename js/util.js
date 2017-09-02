@@ -52,6 +52,12 @@ function write_select(label, name, id, options, selected, show_blank, values) {
 	return html;
 }
 
+function date_from_sqlite_date(date_in_seconds) {
+	var date_in_milliseconds = date_in_seconds * 1000;  // php uses seconds; javascript uses milliseconds
+	var D = new Date(date_in_milliseconds);
+	//console.log('have date string' + D.toDateString());
+	return D;
+}
 
 
 var MyAppRouter;

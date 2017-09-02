@@ -539,11 +539,29 @@
 				debug('plotting isolator');
 				$('#' + pane_id).show();
 			}
+			// make plot of mice produced over time
+			var chart_data = new google.visualization.DataTable();
+			chart_data.addColumn('date', 'Month');
+			chart_data.addColumn('number', "Mice born in 3 weeks");
+
 
 
 			for (var i=0; i<date_births.length; i++) {
-				date_plot[i] = [date_births[i][0]*1000, date_births[i][1]];
+				var D = date_from_sqlite_date(date_births[i][0]);
+				chart_data.addRow([D, date_births[i][1]]);
+
 			}
+			google.charts.setOnLoadCallback(archive_line_plot_draw);
+			function archive_line_plot_draw () {
+				var options = {
+					title: 'mice born every three weeks',
+					legend: { position: 'none' },
+				};
+				var chart = new google.visualization.ScatterChart(document.getElementById(pane_id));
+				chart.draw(chart_data, options);
+			}
+
+/*
                                       $.jqplot(pane_id, [date_plot], {
                                             title:'Isolator Productivity (each point = 3 weeks)', 
                                        //     gridPadding:{right:35},
@@ -562,6 +580,7 @@
                                             series:[{showLine:false}]
                                         });
 
+*/
 			
 
 		}

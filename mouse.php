@@ -625,13 +625,68 @@ function get_isolator_productivity($isolator_id, $db) {
 	$query = "select (death_date-birth_date)/60/60/24/7, birth_date, death_date from mouse m, cage c where c.isolator_id=$isolator_id AND c.cage_id=m.cage_id ORDER BY birth_date";
 	$result1 = $db->query($query);
 
-	$query = "select (m.death_date-m.birth_date)/60/60/24/7, m.birth_date, m.death_date, m.mouse_id, m2.mouse_id, m.cage_id, m2.cage_id from mouse m, mouse m2, mouse_to_parent mtp, cage c2, cage c1 WHERE m.mouse_id=mtp.mouse_id AND mtp.parent_id=m2.mouse_id AND m2.cage_id=c2.cage_id AND c2.isolator_id=$isolator_id AND m.cage_id=c1.cage_id AND c1.isolator_id=0";
-	$result2 = $db->query($query);
+	#$query = "select (m.death_date-m.birth_date)/60/60/24/7, m.birth_date, m.death_date, m.mouse_id, m2.mouse_id, m.cage_id, m2.cage_id from mouse m, mouse m2, mouse_to_parent mtp, cage c2, cage c1 WHERE m.mouse_id=mtp.mouse_id AND mtp.parent_id=m2.mouse_id AND m2.cage_id=c2.cage_id AND c2.isolator_id=$isolator_id AND m.cage_id=c1.cage_id AND c1.isolator_id=0";
+	#$result2 = $db->query($query);
 
-	$results = calculate_productivity($result1, $result2);
+	$results = calculate_productivityB($result1);
+#	$results = calculate_productivity($result1, $result2);
 
 	return $results;
 }
+
+
+function calculate_productivityB($result1) {
+	$results = array();
+	$min_survival_to_include = 1; # only keep mice that survive at least 1 week
+	$temp_results = array();
+	$now = time();
+	$time_window = 21; # how many days to put in a block
+	$time_alive_weeks;
+	$min_round_to = 10000;
+	$max_round_to = round($now/60/60/24/$time_window);
+	
+	while($row = $result1->fetchArray(SQLITE3_NUM)) {
+		$time_alive = $row[0];
+
+		if ($row[2] == 0) { # mouse not dead
+			$time_alive = ($now-$row[1])/60/60/24/7;
+#			$time_alive_weeks = ($now-$row[1])/60/60/24/7;
+#			$time_alive = ($now-$row[1])/60/60/24/$time_window;
+		}
+
+		if ($time_alive > $min_survival_to_include) {
+			$round_to_week = round($row[1]/60/60/24/$time_window);
+#			echo "have $round_to_week";
+			if ($round_to_week < $min_round_to) {
+				$min_round_to = $round_to_week;
+			}
+			$round_to_week *= 60*60*24*$time_window;
+			$temp_result[$round_to_week]++;
+		}
+	}
+
+	$round_to = $min_round_to; 
+#	echo "from $round_to to $max_round_to";
+	while ($round_to < $max_round_to) {
+		$scaled = $round_to * 60*60*24*$time_window;
+
+		if (!$temp_result[$scaled]) {
+			$temp_result[$scaled]=0;
+		}
+
+		$round_to++;
+	}
+
+#
+	ksort($temp_result);
+
+	foreach ($temp_result as $time => $num) {
+		$results[] = array($time,$num);
+	}
+
+	return $results;
+}
+
 
 function calculate_productivity($result1, $result2) {
 	$results = array();
