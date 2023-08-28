@@ -51,6 +51,11 @@
 				window.console.log(text);
   		};
 
+		function is_alphanumeric(text) {
+			if (text.match(/^[\w\- ]+$/)) { return true; }
+			else { return false; }
+		}
+
 		// set up the basic interface and all of the controls
 		function init_mouse_update($pane, MOUSE) {
 			var add_isolator_pane = MOUSE.pane_id + 'add_isolator';
@@ -1079,16 +1084,16 @@
 				'<label for="admin"><b>Isolator Description<b>&nbsp;</label>';
 //				add_isolator($pane, MOUSE, {'isolator_id':isolator_info[0],isolator_description:isolator_info[1],isolator_administrator:isolator_info[2]}});
 			if (exists && exists.isolator_description)
-				html += "<textarea name='isolatorDesc'>" + exists.isolator_description +  "</textarea></div>";
+				html += "<textarea name='isolatorDesc' id='isolatorDescription'>" + exists.isolator_description +  "</textarea></div>";
 			else 
-				html += "<textarea name='isolatorDesc'></textarea></div>";
+				html += "<textarea name='isolatorDesc' id='isolatorDescription'></textarea></div>";
 
 			html += '<div data-role="fieldcontain">' + 
 				'<label for="admin"><b>Isolator Administrator<b>&nbsp;</label>';
 			if (exists && exists.isolator_administrator)
-				html += "<input type='text' name='admin' value='" + exists.isolator_administrator + "'></div>";
+				html += "<input type='text' id='adminText' name='admin' value='" + exists.isolator_administrator + "'></div>";
 			else
-				html += "<input type='text' name='admin'></div>";
+				html += "<input type='text' id='adminText' name='admin'></div>";
 
 			html += '<div id="error_pane"></div>';
 
@@ -1106,8 +1111,13 @@
 			$('#add_isolator_form').submit(function(){
 				debug($(this).serialize());
 //				var start_date = $('#date1').attr('value');
-//				debug('start date is ' + start_date);
-//				if (start_date) {
+				var isolatorAdmin = $('#adminText').attr('value');
+				var isolatorDesc = $('#isolatorDescription').attr('value');
+//				debug('admin is ' + isolatorAdmin);
+				//BLAH
+				
+				if (is_alphanumeric(isolatorDesc) && is_alphanumeric(isolatorAdmin)) {
+				//if (0) {
 					var url = MOUSE.url + '?add_isolator=1&' + $(this).serialize();
 					debug('url is ' + url);
 					$.getJSON(url, function(result) {
@@ -1120,10 +1130,14 @@
 						
 					});
 					
+				}
+//				else if (is_alphanumeric(isolatorDesc) && is_alphanumeric(isolatorAdmin)) {
+//					debug('alphanumeric only; safe');
 //				}
-//				else {
-//					$('#error_pane').html('<b>Error:</b> must enter start date');
-//				}
+				else {
+//					$('#error_pane').html('<b>Error:</b> form not submitted' + is_alphanumeric(isolatorDesc) + ' ' + is_alphanumeric(isolatorAdmin));
+					$('#error_pane').html('<b>Error:</b> form not submitted. Only alphanumeric values allowed');
+				}
 				
 				return false;
 			});
